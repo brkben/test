@@ -1,0 +1,43 @@
+{
+  "name": "projectsetup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rajesh",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^2.1.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/hardhat-upgrades": "^1.19.0",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "@typechain/ethers-v5": "^6.0.5",
+    "@types/chai": "^4.2.17",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^15.0.2",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.3.0",
+    "ethers": "^5.1.4",
+    "hardhat": "^2.2.1",
+    "hardhat-contract-sizer": "^2.5.1",
+    "hardhat-typechain": "^0.3.5",
+    "ts-generator": "^0.1.1",
+    "ts-node": "^10.8.1",
+    "typechain": "^4.0.3",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.0.0",
+    "@openzeppelin/contracts-upgradeable": "^4.7.0",
+    "@uniswap/v2-core": "^1.0.1",
+    "@uniswap/v2-periphery": "^1.1.0-beta.0",
+    "dotenv": "^9.0.2",
+    "hardhat-gas-reporter": "^1.0.4",
+    "solidity-coverage": "^0.7.21",
+    "ts-node-dev": "^2.0.0",
+    "yesno": "^0.3.1"
+  }
+}
