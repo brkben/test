@@ -264,7 +264,7 @@ describe("singleMarketplace 1155 ",async()=>{
     await usdt
       .connect(owner)
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
-    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 6");
+    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("IB");
     });
 
 
@@ -336,7 +336,7 @@ describe("singleMarketplace 1155 ",async()=>{
     await usdt
       .connect(owner)
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
-    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 1");
+    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("AI");
     });
 
       it("ERROR custodial to custodial secondary buy :invalid Seller", async () => {
@@ -482,7 +482,7 @@ describe("singleMarketplace 1155 ",async()=>{
           .connect(signers[7])
           .approve(singleMarketplace.address, expandTo6Decimals(1000));
         await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
-        await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 5");
+        await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IS");
       });
 
       it("custodial to custodial secondary buy errror: invalid buyer", async () => {
@@ -627,7 +627,7 @@ describe("singleMarketplace 1155 ",async()=>{
           .connect(signers[7])
           .approve(singleMarketplace.address, expandTo6Decimals(1000));
         await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
-        await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 6");
+        await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IB");
       });
 
   it("custodial to noncustodial buy", async () => {
@@ -856,7 +856,7 @@ describe("singleMarketplace 1155 ",async()=>{
     await usdt
       .connect(signers[6])
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
-      await expect (singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 6");
+      await expect (singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("IB");
     });
 
   it("ERROR custodial to noncustodial primary buy:  mismatched addresses", async () => {
@@ -1017,7 +1017,7 @@ describe("singleMarketplace 1155 ",async()=>{
     await usdt
       .connect(signers[6])
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
-    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 4");
+    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("PI");
   });
 
   it("ERROR custodial to noncustodial secondary buy: invalid Seller", async () => {
@@ -1163,7 +1163,7 @@ describe("singleMarketplace 1155 ",async()=>{
       .connect(signers[7])
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
     await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
-    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 5");
+    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IS");
   });
 
   it("ERROR custodial to noncustodial secondary buy: invalid buyer", async () => {
@@ -1309,7 +1309,7 @@ describe("singleMarketplace 1155 ",async()=>{
       .connect(signers[7])
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
     await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
-    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 6");
+    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IB");
   });
 
   it("non custodial to custodial buy", async () => {
@@ -1539,7 +1539,7 @@ describe("singleMarketplace 1155 ",async()=>{
     await usdt
       .connect(owner)
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
-    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 6");
+    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("IB");
   });
 
   it("non custodial to custodial primary buy: mismatched addresses", async () => {
@@ -1702,7 +1702,7 @@ describe("singleMarketplace 1155 ",async()=>{
     await usdt
       .connect(owner)
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
-    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 4");
+    await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("PI");
   });
 
   it("ERROR non custodial to custodial secondary buy: invalid Seller", async () => {
@@ -1849,7 +1849,7 @@ describe("singleMarketplace 1155 ",async()=>{
       .connect(signers[7])
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
     await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);  
-    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 5");
+    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IS");
   });
 
   it("ERROR non custodial to custodial secondary buy: invalid buyer", async () => {
@@ -1996,7 +1996,7 @@ describe("singleMarketplace 1155 ",async()=>{
       .connect(signers[7])
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
     await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);  
-    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 6");
+    await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IB");
   });
 
   it("non custodial to non custodial buy", async () => {
@@ -2316,7 +2316,7 @@ it("ERROR non custodial to non custodial primary buy: invalid price", async () =
   await usdt
     .connect(signers[6])
     .approve(singleMarketplace.address, expandTo6Decimals(1000));
-  await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 4");
+  await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("PI");
 });
 
 it("ERROR non custodial to non custodial primary buy:invalid buyer", async () => {
@@ -2397,7 +2397,7 @@ it("ERROR non custodial to non custodial primary buy:invalid buyer", async () =>
   await usdt
     .connect(signers[6])
     .approve(singleMarketplace.address, expandTo6Decimals(1000));
-  await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 6");
+  await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("IB");
 });
 
 it("ERROR: non custodial to non custodial secondary buy: invalid Seller", async () => {
@@ -2543,7 +2543,7 @@ it("ERROR: non custodial to non custodial secondary buy: invalid Seller", async 
     .connect(signers[7])
     .approve(singleMarketplace.address, expandTo6Decimals(1000));
   await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
-  await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 5");
+  await expect(singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IS");
 });
 
 it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
@@ -2689,10 +2689,10 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
     .connect(signers[7])
     .approve(singleMarketplace.address, expandTo6Decimals(1000));
   await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
-  await expect (singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("Error 6");
+  await expect (singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false)).to.be.revertedWith("IB");
 });
 
-  it("ERROR 1155 Buy: Addresses doesn't match",async()=>{
+  it("AI155 Buy: Addresses doesn't match",async()=>{
     //create collection
     await factory.connect(owner).create1155Token("T-series", owner.address, superOwner.address);
     const Tseries = await factory.connect(owner).userNFTContracts(owner.address,0);
@@ -2724,7 +2724,7 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
     //console.log("treasury balance:",await usdt.balanceOf(owner.address))
     await usdt.connect(owner).approve(singleMarketplace.address,expandTo6Decimals(1000));
     //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
-    await expect (singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 1");
+    await expect (singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("AI");
     })
 
     it("1155buy: counters mismatched",async()=>{
@@ -2759,10 +2759,10 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
       //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt.connect(owner).approve(singleMarketplace.address,expandTo6Decimals(1000));
       //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
-      await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 2");
+      await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("CI");
       })
 
-      it("ERROR 1155 buy: mismatched amounts",async()=>{
+      it("AI155 buy: mismatched amounts",async()=>{
         //create collection
         await factory.connect(owner).create1155Token("T-series", owner.address, superOwner.address,);
         const Tseries = await factory.connect(owner).userNFTContracts(owner.address,0);
@@ -2794,10 +2794,10 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
         //console.log("treasury balance:",await usdt.balanceOf(owner.address))
         await usdt.connect(owner).approve(singleMarketplace.address,expandTo6Decimals(1000));
         //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
-        await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 3");
+        await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("AMI");
       })    
 
-      it("ERROR 1155 buy :price doesn't match",async()=>{
+      it("AI155 buy :price doesn't match",async()=>{
         //create collection
         await factory.connect(owner).create1155Token("T-series", owner.address, superOwner.address,);
         const Tseries = await factory.connect(owner).userNFTContracts(owner.address,0);
@@ -2829,7 +2829,7 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
         //console.log("treasury balance:",await usdt.balanceOf(owner.address))
         await usdt.connect(owner).approve(singleMarketplace.address,expandTo6Decimals(1000));
         //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
-        await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("Error 4");
+        await expect(singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT,false)).to.be.revertedWith("PI");
       }) 
 
       describe("setter functions",async()=>{

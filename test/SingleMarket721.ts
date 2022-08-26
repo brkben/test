@@ -10,9 +10,7 @@ import {
   Template1155,
   Template1155__factory,
   SingleMarket,
-  SingleMarket__factory,
-  HeftyVerseMarketplace721,
-  HeftyVerseMarketplace721__factory,
+  SingleMarket__factory
 } from "../typechain";
 import LazyMinting from "./utilities/LazyMinting";
 import SellerVoucher from "./utilities/SellerVoucher";
@@ -31,7 +29,7 @@ describe("Template", async () => {
   let signers: SignerWithAddress[];
   let usdt: Usd;
 
-  let Marketplace: HeftyVerseMarketplace721;
+  
 
   // let Marketplace: HeftyVerseMarketplace721;
 
@@ -48,14 +46,14 @@ describe("Template", async () => {
     usdt = await new Usd__factory(owner).deploy();
     factory = await new TokenFactory__factory(owner).deploy();
 
-    Marketplace = await new HeftyVerseMarketplace721__factory(owner).deploy();
+    // Marketplace = await new HeftyVerseMarketplace721__factory(owner).deploy();
 
-    await Marketplace.initialise(
-      owner.address,
-      owner.address,
-      usdt.address,
-      owner.address
-      );
+    // await Marketplace.initialise(
+    //   owner.address,
+    //   owner.address,
+    //   usdt.address,
+    //   owner.address
+    //   );
 
     // Marketplace = await new HeftyVerseMarketplace721__factory(owner).deploy(owner.address,owner.address,usdt.address,owner.address);
 
@@ -838,7 +836,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 1");
+      ).to.be.revertedWith("AI");
     });
     it("ERROR: Price paid and price of nft doesn't match", async () => {
       //create collection
@@ -929,7 +927,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 4");
+      ).to.be.revertedWith("PI");
     });
 
     it("ERROR: Counters of vouchers doesn't match", async () => {
@@ -1021,7 +1019,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 2");
+      ).to.be.revertedWith("PI");
     });
 
     it("ERROR: Amounts of vouchers doesn't match", async () => {
@@ -1113,7 +1111,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 3");
+      ).to.be.revertedWith("PI");
     });
 
     //Custodial to custodial
@@ -1206,7 +1204,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     it("ERROR: Signature of seller not matching at secondary buy(C2C)", async () => {
@@ -1366,7 +1364,7 @@ describe("Template", async () => {
           voucherNFT2,
           true
         )
-      ).to.be.revertedWith("Error 5");
+      ).to.be.revertedWith("IS");
     });
 
     it("ERROR: Signature of buyer not matching at secondary buy(C2C)", async () => {
@@ -1526,7 +1524,7 @@ describe("Template", async () => {
           voucherNFT2,
           true
         )
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     // //custodial to non-custodial
@@ -1620,7 +1618,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     it("ERROR: Signature of seller not matching at secondary buy(C2N)", async () => {
@@ -1781,7 +1779,7 @@ describe("Template", async () => {
           voucherNFT2,
           true
         )
-      ).to.be.revertedWith("Error 5");
+      ).to.be.revertedWith("IS");
     });
 
     it("ERROR: Signature of buyer not matching at secondary buy(C2N)", async () => {
@@ -1942,7 +1940,7 @@ describe("Template", async () => {
           voucherNFT2,
           true
         )
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     // //non-custodial to custodial
@@ -2036,7 +2034,7 @@ describe("Template", async () => {
           voucherNFT,
           true
         )
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     it("ERROR: Signature of seller not matching at secondary buy(N2C)", async () => {
@@ -2163,7 +2161,7 @@ describe("Template", async () => {
 
       await expect(
         singleMarketplace.Buy(buyerVoucher2, sellerVoucher2, voucher2,voucherNFT2, true)
-      ).to.be.revertedWith("Error 5");
+      ).to.be.revertedWith("IS");
     });
 
     it("ERROR: Signature of buyer not matching at secondary buy(N2C)", async () => {
@@ -2267,7 +2265,7 @@ describe("Template", async () => {
 
       await expect(
         singleMarketplace.Buy(buyerVoucher2, sellerVoucher2, voucher2,voucherNFT2, true)
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     // //non-custodial to non-custodial
@@ -2331,7 +2329,7 @@ describe("Template", async () => {
         .approve(singleMarketplace.address, expandTo6Decimals(1000));
       await expect(
         singleMarketplace.Buy(Voucherbuy, VoucherSell, voucher,voucherNFT, true)
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     it("ERROR: Signature of seller not matching at secondary buy(N2N)", async () => {
@@ -2435,7 +2433,7 @@ describe("Template", async () => {
 
       await expect(
         singleMarketplace.Buy(buyerVoucher2, sellerVoucher2, voucher2,voucherNFT2, true)
-      ).to.be.revertedWith("Error 5");
+      ).to.be.revertedWith("IS");
     });
 
     it("ERROR: Signature of buyer not matching at secondary buy(N2N)", async () => {
@@ -2538,7 +2536,7 @@ describe("Template", async () => {
 
       await expect(
         singleMarketplace.Buy(buyerVoucher2, sellerVoucher2, voucher2,voucherNFT2, true)
-      ).to.be.revertedWith("Error 6");
+      ).to.be.revertedWith("IB");
     });
 
     //setter function test cases
