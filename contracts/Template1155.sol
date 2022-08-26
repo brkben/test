@@ -111,7 +111,7 @@ contract Template1155 is
             _voucher.royaltyKeeper,
             _voucher.royaltyFees
         );
-        _safeTransferFrom(
+        safeTransferFrom(
             signer,
             redeemer,
             _voucher.tokenId,

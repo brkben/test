@@ -69,7 +69,7 @@ contract Template721 is
             address(_voucher.royaltyKeeper),
             _voucher.royaltyFees
         );
-        _transfer(signer, redeemer, _voucher.tokenId);
+        transferFrom(signer, redeemer, _voucher.tokenId);
     }
 
     /**
