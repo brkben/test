@@ -424,6 +424,11 @@
 						"type": "string"
 					},
 					{
+						"internalType": "bool",
+						"name": "toMint",
+						"type": "bool"
+					},
+					{
 						"internalType": "address",
 						"name": "royaltyKeeper",
 						"type": "address"

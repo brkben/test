@@ -1,0 +1,2369 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/SingleMarket.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> SingleMarket.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">98.55% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>136/138</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">93.18% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>82/88</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">95.45% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>21/22</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">98.47% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>129/131</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-yes">923×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">470×</span>
+<span class="cline-any cline-yes">466×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">431×</span>
+<span class="cline-any cline-yes">107×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">107×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">107×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">110×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">466×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">466×</span>
+<span class="cline-any cline-yes">466×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">458×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">458×</span>
+<span class="cline-any cline-yes">458×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">466×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">458×</span>
+<span class="cline-any cline-yes">442×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">212×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">211×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">230×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">225×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">222×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">221×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">107×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">57×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">107×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">54×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">107×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">81×</span>
+<span class="cline-any cline-yes">39×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">48×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">110×</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">84×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">84×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">84×</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-yes">42×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">59×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">272×</span>
+<span class="cline-any cline-yes">272×</span>
+<span class="cline-any cline-yes">272×</span>
+<span class="cline-any cline-yes">272×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">272×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">52×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">104×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">431×</span>
+<span class="cline-any cline-yes">431×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">431×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//SPDX-License-Identifier: MIT
+pragma solidity =0.8.14;
+&nbsp;
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
+import "./Relayer/BasicMetaTransaction.sol";
+import "./interfaces/ISFTTemplate.sol";
+import "./interfaces/INFTTemplate.sol";
+&nbsp;
+contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
+    bytes32 public constant HEFTYVERSE_SELLER_HASH =
+        0x51578850e098d13a094707a5ac92c49e129a0105cf9dd73242d806c6226cb33b;
+    bytes32 public constant HEFTYVERSE_BUYER_HASH =
+        0xa5d11765150653576a9e54747c7f8320f9efd3015db18555ba41dcc88980b8f7;
+&nbsp;
+    struct HeftyVerseSeller {
+        address nftAddress; // Address of the NFT contract
+        address owner; // Owner of the NFT
+        uint256 tokenID; // Token ID of the NFT
+        uint256 amount; // Amount of the NFT to be sold
+        uint256 minPrice; // Minimum secondary sale price of the NFT
+        uint256 counter; // Unique counter of the HeftyVerseSeller
+        bool isFixedPrice; // Bool to check if it is fixed price sale or auction
+        bool isCustodial; // Bool to check if the wallet is custodial or non-custodail
+        bytes signature; // Signature created after signing HeftyVerseSeller
+    }
+&nbsp;
+    struct HeftyVerseBuyer {
+        address nftAddress; // Address of the NFT contract
+        address buyer; // Address of the Buyer of the NFT
+        uint256 tokenID; // Token ID of the NFT
+        uint256 amount; // Amount of the NFT to be bought
+        uint256 pricePaid; // Price paid for the NFT
+        uint256 counter; // Unique counter of the HeftyVerseSeller
+        bool isCustodial; // Bool to check if the wallet is custodial or non-custodail
+        bytes signature; // Signature created after signing HeftyVerseBuyer
+    }
+&nbsp;
+    // Admin address of the contract
+    address public admin;
+&nbsp;
+    // Token to buy NFTs
+    IERC20Upgradeable public token;
+&nbsp;
+    // Marketing address for fee
+    address public marketWallet;
+&nbsp;
+    // Treasury address
+    address public treasury;
+&nbsp;
+    // Marketplace fee in bps
+    uint public marketFee = 200;
+&nbsp;
+    // Mapping for used counter numbers
+    mapping(uint256 =&gt; bool) public usedCounters;
+&nbsp;
+    // Mapping of the counter to the amount left in voucher
+    mapping(uint256 =&gt; uint256) public amountLeft;
+&nbsp;
+    event AmountDistributed(
+        address indexed buyer,
+        uint amountPaid,
+        uint royaltyPaid,
+        uint marketFeePaid
+    );
+    event TokenWithdrawn(uint256 _amount);
+&nbsp;
+    /**
+     * @dev Initializes the contract by setting a `owner`, `marketingWallet`, `treasury` and `token` for the marketplace
+     * @param _owner is set as the owner for Marketplace contract
+     * @param _marketWallet is set as the wallet for marketplace fee
+     * @param _token is set as the token using which NFTs will be bought
+     * @param _treasury is set as the address from which funds will be used during custodial buy.
+     */
+    function initialize(
+        address _owner,
+        address _marketWallet,
+        address _token,
+        address _treasury
+    ) external initializer {
+        __EIP712_init("Heftyverse_MarketItem", "1");
+&nbsp;
+        admin = _owner;
+        marketWallet = _marketWallet;
+        treasury = _treasury;
+        token = IERC20Upgradeable(_token);
+    }
+&nbsp;
+    /**
+     * @dev `buyer` and `seller` will be used in case of secondary sell
+     * @dev `seller` and `_voucher` will be used in case of primary sell
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param _voucher is a SFTvoucher describing an unminted NFT
+     * @param _voucherNFT is a NFTvoucher describing an unminted NFT
+     * @param is721NFT is to check if token is NFT or SFT
+     */
+    function Buy(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        Voucher.SFTvoucher memory _voucher,
+        Voucher.NFTvoucher memory _voucherNFT,
+        bool is721NFT
+    ) external {
+        //Prices invalid
+        require(seller.minPrice &lt;= buyer.pricePaid, "PI");
+        verifyVoucherCreators(buyer, seller, _voucher, _voucherNFT, is721NFT);
+&nbsp;
+        if (buyer.isCustodial == true &amp;&amp; seller.isCustodial == true)
+            BuyCustodial2Custodial(
+                buyer,
+                seller,
+                _voucher,
+                _voucherNFT,
+                is721NFT
+            );
+        else if (buyer.isCustodial == true &amp;&amp; seller.isCustodial == false)
+            BuyNonCustodial2Custodial(
+                buyer,
+                seller,
+                _voucher,
+                _voucherNFT,
+                is721NFT
+            );
+        else if (buyer.isCustodial == false &amp;&amp; seller.isCustodial == true)
+            BuyCustodial2NonCustodial(
+                buyer,
+                seller,
+                _voucher,
+                _voucherNFT,
+                is721NFT
+            );
+        else
+            BuyNonCustodial2NonCustodial(
+                buyer,
+                seller,
+                _voucher,
+                _voucherNFT,
+                is721NFT
+            );
+    }
+&nbsp;
+    /**
+     * @notice Function to reset the counter for a voucher
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     */
+    function resetCounter(HeftyVerseSeller memory seller) external {
+        require(msg.sender == admin, "NA"); //not admin
+        amountLeft[seller.counter] = 0;
+        usedCounters[seller.counter] = true;
+    }
+&nbsp;
+    /**
+     * @notice Function to set new token for buy/sell in the marketplace
+     * @param _token is the new token which will be used for buy/sell in the marketplace
+     */
+    function setToken(address _token) external {
+        //not admin
+        require(msg.sender == admin, "NA");
+        //zero address
+        require(_token != address(0), "ZA");
+        token = IERC20Upgradeable(_token);
+    }
+&nbsp;
+    /**
+     * @notice Function to set new address for market wallet
+     * @param _wallet is the new wallet address where marketplace fee will be sent
+     */
+    function setMarketingWallet(address _wallet) external {
+        // not admin
+        require(msg.sender == admin, "NA");
+        //zero address
+        require(_wallet != address(0), "ZA");
+        marketWallet = _wallet;
+    }
+&nbsp;
+    /**
+     * @notice Function to set new address for market wallet
+     * @param _wallet is the new wallet address where marketplace fee will be sent
+     */
+    function settreasury(address _wallet) external {
+        // not admin
+        require(msg.sender == admin, "NA");
+        //zero address
+        require(_wallet != address(0), "ZA");
+        treasury = _wallet;
+    }
+&nbsp;
+    /**
+     * @notice Function to set new marketplace fee in bps
+     * @param _fee is the new marketplace fee
+     */
+    function setMarketFee(uint _fee) external {
+        // not admin
+        require(msg.sender == admin, "NA");
+        //invalid Value
+        require(_fee &lt;= 10000, "IV");
+        marketFee = _fee;
+    }
+&nbsp;
+    /**
+     * @notice Function to withdraw stuck tokens from the contract
+     * @param _token is the token to be withdrawn
+     */
+    function withdrawStuckToken(address _token) external {
+        uint256 _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+        IERC20Upgradeable(_token).transfer(admin, _amount);
+        emit TokenWithdrawn(_amount);
+    }
+&nbsp;
+    /**
+     * @notice Function to set new admin of the contract
+     * @param _admin is the new admin of the contract
+     */
+    function transferAdminRole(address _admin) external {
+        require(msg.sender == admin, "NA"); // not admin
+        //zero address
+        require(_admin != address(0), "ZA");
+        admin = _admin;
+    }
+&nbsp;
+    /**
+     * @notice Returns a hash of the given HeftyVerseSeller, prepared using EIP712 typed data hashing rules.
+     * @param seller is a HeftyVerseSeller to hash.
+     */
+    function _hashSeller(HeftyVerseSeller memory seller)
+        internal
+        view
+        returns (bytes32)
+    {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        HEFTYVERSE_SELLER_HASH,
+                        seller.nftAddress,
+                        seller.owner,
+                        seller.tokenID,
+                        seller.amount,
+                        seller.minPrice,
+                        seller.counter,
+                        seller.isFixedPrice,
+                        seller.isCustodial
+                    )
+                )
+            );
+    }
+&nbsp;
+    /**
+     * @notice Verifies the signature for a given HeftyVerseSeller, returning the address of the signer.
+     * @dev Will revert if the signature is invalid. Does not verify that the signer is owner of the NFT.
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     */
+    function _verifySeller(HeftyVerseSeller memory seller)
+        internal
+        view
+        returns (address)
+    {
+        bytes32 digest = _hashSeller(seller);
+        return ECDSAUpgradeable.recover(digest, seller.signature);
+    }
+&nbsp;
+    /**
+     * @notice Returns a hash of the given HeftyVerseBuyer, prepared using EIP712 typed data hashing rules.
+     * @param buyer is a HeftyVerseBuyer to hash.
+     */
+    function _hashBuyer(HeftyVerseBuyer memory buyer)
+        internal
+        view
+        returns (bytes32)
+    {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        HEFTYVERSE_BUYER_HASH,
+                        buyer.nftAddress,
+                        buyer.buyer,
+                        buyer.tokenID,
+                        buyer.amount,
+                        buyer.pricePaid,
+                        buyer.counter,
+                        buyer.isCustodial
+                    )
+                )
+            );
+    }
+&nbsp;
+    /**
+     * @notice Verifies the signature for a given HeftyVerseBuyer, returning the address of the signer.
+     * @dev Will revert if the signature is invalid.
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     */
+    function _verifyBuyer(HeftyVerseBuyer memory buyer)
+        internal
+        view
+        returns (address)
+    {
+        bytes32 digest = _hashBuyer(buyer);
+        return ECDSAUpgradeable.recover(digest, buyer.signature);
+    }
+&nbsp;
+    /**
+     * @notice This is the internal view function used to verify th signers of buyer and seller for secondary sale of NFT
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param _voucher is a SFTvoucher describing an unminted NFT
+     * @param _voucherNFT is a NFTvoucher describing an unminted NFT
+     * @param is721Nft is to check if token is NFT or SFT
+     */
+    function verifyVoucherCreators(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        Voucher.SFTvoucher memory _voucher,
+        Voucher.NFTvoucher memory _voucherNFT,
+        bool is721Nft
+    ) internal view {
+        //invalid Seller
+        require(seller.owner == _verifySeller(seller), "IS");
+        // invalid Buyer
+        require(buyer.buyer == _verifyBuyer(buyer), "IB");
+        if (is721Nft) {
+            // Address Invalid
+            require(
+                buyer.nftAddress == _voucherNFT.nftAddress &amp;&amp;
+                    seller.nftAddress == _voucherNFT.nftAddress,
+                "AI"
+            );
+            //Prices invalid
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(_voucherNFT.price &lt;= buyer.pricePaid, "PI");
+        } else {
+            // Address Invalid
+            require(
+                buyer.nftAddress == _voucher.nftAddress &amp;&amp;
+                    seller.nftAddress == _voucher.nftAddress,
+                "AI"
+            );
+            // Price Invalid
+            require(_voucher.price &lt;= buyer.pricePaid, "PI");
+            // Counter Invalid
+            require(
+                buyer.counter == seller.counter &amp;&amp;
+                    seller.counter == _voucher.counter,
+                "CI"
+            );
+            //Amounts invalid
+            require(
+                buyer.amount == seller.amount &amp;&amp;
+                    seller.amount == _voucher.amount,
+                "AMI"
+            );
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function _msgSender()</span>
+        internal
+        view
+        override(BasicMetaTransaction)
+        returns (address sender)
+    {
+<span class="cstat-no" title="statement not covered" >        return super._msgSender();</span>
+    }
+&nbsp;
+    /**
+     * @notice This is the internal function used in case if both buyer and seller are custodial wallets
+     * @dev `buyer` and `seller` will be used in case of secondary sell
+     * @dev `seller` and `_voucher` will be used in case of primary sell
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param _voucher is a SFTVoucher describing an unminted NFT
+     * @param _voucherNFT is a NFTvoucher describing an unminted NFT
+     * @param is721NFT is to check if token is NFT or SFT
+     */
+    function BuyCustodial2Custodial(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        Voucher.SFTvoucher memory _voucher,
+        Voucher.NFTvoucher memory _voucherNFT,
+        bool is721NFT
+    ) internal {
+        if (!_voucher.toMint || !_voucherNFT.toMint) {
+            setCounter(buyer, seller);
+&nbsp;
+            // royalty given
+            uint royaltyAmount = sendRoyalty(buyer, seller, is721NFT, true);
+&nbsp;
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, true);
+            //nft transfer
+            if (is721NFT) {
+                INFTTemplate(seller.nftAddress).transferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID
+                );
+            } else {
+                ISFTTemplate(seller.nftAddress).safeTransferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID,
+                    seller.amount,
+                    ""
+                );
+            }
+            emit AmountDistributed(
+                buyer.buyer,
+                buyer.pricePaid,
+                royaltyAmount,
+                fee
+            );
+        } else {
+            //verifyPrimary(seller, buyer, _voucher);
+&nbsp;
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, true);
+            // token redeeming
+            if (is721NFT) {
+                token.transferFrom(
+                    treasury,
+                    INFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                token.transferFrom(
+                    treasury,
+                    ISFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+&nbsp;
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        }
+    }
+&nbsp;
+    /**
+     * @notice This is the internal function used in case if seller is a custodial wallet and buyer is non-custodial wallet
+     * @dev `buyer` and `seller` will be used in case of secondary sell
+     * @dev `seller` and `_voucher` will be used in case of primary sell
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param _voucher is a SFTVoucher describing an unminted NFT
+     * @param _voucherNFT is a NFTvoucher describing an unminted NFT
+     * @param is721NFT is to check if token is NFT or SFT
+     */
+    function BuyCustodial2NonCustodial(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        Voucher.SFTvoucher memory _voucher,
+        Voucher.NFTvoucher memory _voucherNFT,
+        bool is721NFT
+    ) internal {
+        if (!_voucher.toMint || !_voucherNFT.toMint) {
+            setCounter(buyer, seller);
+&nbsp;
+            // royalty given
+            uint royaltyAmount = sendRoyalty(buyer, seller, is721NFT, false);
+&nbsp;
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, false);
+&nbsp;
+            //payment transfer
+            token.transferFrom(
+                buyer.buyer,
+                treasury,
+                buyer.pricePaid - (royaltyAmount + fee)
+            );
+            // nft transfer
+            if (is721NFT)
+                INFTTemplate(seller.nftAddress).transferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID
+                );
+            else
+                ISFTTemplate(seller.nftAddress).safeTransferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID,
+                    seller.amount,
+                    ""
+                );
+&nbsp;
+            emit AmountDistributed(
+                buyer.buyer,
+                buyer.pricePaid,
+                royaltyAmount,
+                fee
+            );
+        } else {
+            //verifyPrimary(seller, buyer, _voucher);
+&nbsp;
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, false);
+            // token redeeming
+            if (is721NFT) {
+                token.transferFrom(
+                    buyer.buyer,
+                    INFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                token.transferFrom(
+                    buyer.buyer,
+                    ISFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+&nbsp;
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        }
+    }
+&nbsp;
+    /**
+     * @notice This is the internal function used in case if seller is a non-custodial wallet and buyer is custodial wallet
+     * @dev `buyer` and `seller` will be used in case of secondary sell
+     * @dev `seller` and `_voucher` will be used in case of primary sell
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param _voucher is a SFTVoucher describing an unminted NFT
+     * @param _voucherNFT is a NFTvoucher describing an unminted NFT
+     * @param is721NFT is to check if token is NFT or SFT
+     */
+    function BuyNonCustodial2Custodial(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        Voucher.SFTvoucher memory _voucher,
+        Voucher.NFTvoucher memory _voucherNFT,
+        bool is721NFT
+    ) internal {
+        if (!_voucher.toMint || !_voucherNFT.toMint) {
+            setCounter(buyer, seller);
+&nbsp;
+            // royalty given
+            uint royaltyAmount = sendRoyalty(buyer, seller, is721NFT, true);
+&nbsp;
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, true);
+            //payment transfer
+            token.transferFrom(
+                treasury,
+                seller.owner,
+                buyer.pricePaid - (royaltyAmount + fee)
+            );
+            //nft transfer
+            if (is721NFT)
+                INFTTemplate(seller.nftAddress).transferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID
+                );
+            else
+                ISFTTemplate(seller.nftAddress).safeTransferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID,
+                    seller.amount,
+                    ""
+                );
+&nbsp;
+            emit AmountDistributed(
+                buyer.buyer,
+                buyer.pricePaid,
+                royaltyAmount,
+                fee
+            );
+        } else {
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, true);
+            // token redeeming
+            if (is721NFT) {
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+&nbsp;
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        }
+    }
+&nbsp;
+    /**
+     * @notice This is the internal function used in case if seller is a non-custodial wallet and buyer is also non-custodial wallet
+     * @dev `buyer` and `seller` will be used in case of secondary sell
+     * @dev `seller` and `_voucher` will be used in case of primary sell
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param _voucher is a SFTVoucher describing an unminted SFT
+     * @param _voucherNFT is a NFTVoucher describing an unminted NFT
+     * @param is721NFT is to check if token is NFT or SFT
+     */
+    function BuyNonCustodial2NonCustodial(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        Voucher.SFTvoucher memory _voucher,
+        Voucher.NFTvoucher memory _voucherNFT,
+        bool is721NFT
+    ) internal {
+        if (!_voucher.toMint || !_voucherNFT.toMint) {
+            setCounter(buyer, seller);
+&nbsp;
+            // royalty given
+            uint royaltyAmount = sendRoyalty(buyer, seller, is721NFT, false);
+&nbsp;
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, false);
+            //payment transfer
+            token.transferFrom(
+                buyer.buyer,
+                seller.owner,
+                buyer.pricePaid - (royaltyAmount + fee)
+            );
+            //nft transfer
+            if (is721NFT)
+                INFTTemplate(seller.nftAddress).transferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID
+                );
+            else
+                ISFTTemplate(seller.nftAddress).safeTransferFrom(
+                    seller.owner,
+                    buyer.buyer,
+                    seller.tokenID,
+                    seller.amount,
+                    ""
+                );
+&nbsp;
+            emit AmountDistributed(
+                buyer.buyer,
+                buyer.pricePaid,
+                royaltyAmount,
+                fee
+            );
+        } else {
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, false);
+            //payment transfer
+            token.transferFrom(
+                buyer.buyer,
+                seller.owner,
+                buyer.pricePaid - fee
+            );
+            // token redeeming
+            if (is721NFT) {
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+&nbsp;
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        }
+    }
+&nbsp;
+    /**
+     * @notice This is the internal view function used to set the counter for the seller
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     */
+    function setCounter(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller
+    ) internal {
+        //Counter used
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(!usedCounters[seller.counter], "CU");
+        uint256 leftCounter = amountLeft[seller.counter];
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (leftCounter == 0) {
+            leftCounter = seller.amount - buyer.amount;
+        } else {
+<span class="cstat-no" title="statement not covered" >            leftCounter = leftCounter - buyer.amount</span>;
+        }
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (leftCounter == 0) usedCounters[seller.counter] = true;
+    }
+&nbsp;
+    /**
+     * @notice This is the internal view function used to send the royalty during the secondary sale
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param seller is a HeftyVerseSeller describing the NFT to be sold
+     * @param is721NFT is to check if token is NFT or SFT
+     * @param fromTreasury is to check if royalty is sent from treasury or buyer
+     */
+    function sendRoyalty(
+        HeftyVerseBuyer memory buyer,
+        HeftyVerseSeller memory seller,
+        bool is721NFT,
+        bool fromTreasury
+    ) internal returns (uint) {
+        address receiver;
+        uint royaltyAmount;
+        if (is721NFT) {
+            //not owner
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(
+                INFTTemplate(seller.nftAddress).ownerOf(seller.tokenID) ==
+                    seller.owner,
+                "NO"
+            );
+            (receiver, royaltyAmount) = INFTTemplate(seller.nftAddress)
+                .royaltyInfo(seller.tokenID, buyer.pricePaid);
+        } else {
+            //not owner
+            <span class="missing-if-branch" title="else path not taken" >E</span>require(
+                ISFTTemplate(seller.nftAddress).balanceOf(
+                    seller.owner,
+                    seller.tokenID
+                ) &gt;= seller.amount,
+                "NO"
+            );
+            (receiver, royaltyAmount) = ISFTTemplate(seller.nftAddress)
+                .royaltyInfo(seller.tokenID, buyer.pricePaid);
+        }
+&nbsp;
+        if (fromTreasury) token.transferFrom(treasury, receiver, royaltyAmount);
+        else token.transferFrom(buyer.buyer, receiver, royaltyAmount);
+&nbsp;
+        return royaltyAmount;
+    }
+&nbsp;
+    /**
+     * @notice This is the internal view function used to deduct the marketplace fee
+     * @param buyer is a HeftyVerseBuyer describing the NFT to be bought
+     * @param fromTreasury is to check if royalty is sent from treasury or buyer
+     */
+    function takeMarketplaceFee(HeftyVerseBuyer memory buyer, bool fromTreasury)
+        internal
+        returns (uint)
+    {
+        uint fee = (buyer.pricePaid * marketFee) / 10000;
+        if (fromTreasury) token.transferFrom(treasury, marketWallet, fee);
+        else token.transferFrom(buyer.buyer, marketWallet, fee);
+&nbsp;
+        return fee;
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Sep 07 2022 13:26:35 GMT+0530 (India Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

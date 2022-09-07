@@ -102,7 +102,17 @@
 					},
 					{
 						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
 						"name": "pricePaid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "counter",
 						"type": "uint256"
 					},
 					{
@@ -116,7 +126,7 @@
 						"type": "bytes"
 					}
 				],
-				"internalType": "struct HeftyVerseMarketplace721.HeftyVerseBuyer",
+				"internalType": "struct SingleMarket.HeftyVerseBuyer",
 				"name": "buyer",
 				"type": "tuple"
 			},
@@ -139,7 +149,17 @@
 					},
 					{
 						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
 						"name": "minPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "counter",
 						"type": "uint256"
 					},
 					{
@@ -158,8 +178,65 @@
 						"type": "bytes"
 					}
 				],
-				"internalType": "struct HeftyVerseMarketplace721.HeftyVerseSeller",
+				"internalType": "struct SingleMarket.HeftyVerseSeller",
 				"name": "seller",
+				"type": "tuple"
+			},
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "nftAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "counter",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "tokenUri",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "toMint",
+						"type": "bool"
+					},
+					{
+						"internalType": "address",
+						"name": "royaltyKeeper",
+						"type": "address"
+					},
+					{
+						"internalType": "uint96",
+						"name": "royaltyFees",
+						"type": "uint96"
+					},
+					{
+						"internalType": "bytes",
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"internalType": "struct Voucher.SFTvoucher",
+				"name": "_voucher",
 				"type": "tuple"
 			},
 			{
@@ -185,6 +262,11 @@
 						"type": "string"
 					},
 					{
+						"internalType": "bool",
+						"name": "toMint",
+						"type": "bool"
+					},
+					{
 						"internalType": "address",
 						"name": "royaltyKeeper",
 						"type": "address"
@@ -201,8 +283,13 @@
 					}
 				],
 				"internalType": "struct Voucher.NFTvoucher",
-				"name": "_voucher",
+				"name": "_voucherNFT",
 				"type": "tuple"
+			},
+			{
+				"internalType": "bool",
+				"name": "is721NFT",
+				"type": "bool"
 			}
 		],
 		"name": "Buy",
@@ -244,6 +331,25 @@
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "amountLeft",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -343,7 +449,7 @@
 				"type": "address"
 			}
 		],
-		"name": "initialise",
+		"name": "initialize",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -372,6 +478,66 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "nftAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenID",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "counter",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isFixedPrice",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "isCustodial",
+						"type": "bool"
+					},
+					{
+						"internalType": "bytes",
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"internalType": "struct SingleMarket.HeftyVerseSeller",
+				"name": "seller",
+				"type": "tuple"
+			}
+		],
+		"name": "resetCounter",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -460,6 +626,25 @@
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "usedCounters",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",

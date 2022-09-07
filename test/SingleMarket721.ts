@@ -45,7 +45,7 @@ describe("Template", async () => {
     template1155 = await new Template1155__factory(owner).deploy();
     usdt = await new Usd__factory(owner).deploy();
     factory = await new TokenFactory__factory(owner).deploy();
-
+    
     // Marketplace = await new HeftyVerseMarketplace721__factory(owner).deploy();
 
     // await Marketplace.initialise(
@@ -80,7 +80,7 @@ describe("Template", async () => {
       signers[1].address,
       factory.address
     );
-    await factory.initialize(
+    await factory.connect(owner).initialize(
       NFT.address,
       template1155.address,
       singleMarketplace.address
@@ -2257,8 +2257,7 @@ describe("Template", async () => {
         1,
         1,
         expandTo6Decimals(10),
-        1,
-        true
+        1,        true
       );
 
       await TRS.connect(signers[6]).approve(singleMarketplace.address, 1);
@@ -2544,6 +2543,8 @@ describe("Template", async () => {
     it("updating token address", async () => {
       await singleMarketplace.setToken(signers[4].address);
       expect(await singleMarketplace.token()).to.be.eq(signers[4].address);
+      await expect(singleMarketplace.connect(signers[5]).setToken(signers[4].address)).to.be.revertedWith("NA")
+      await expect(singleMarketplace.connect(owner).setToken(ethers.constants.AddressZero)).to.be.revertedWith("ZA")
     });
 
     it("updating market wallet address", async () => {
@@ -2551,39 +2552,113 @@ describe("Template", async () => {
       expect(await singleMarketplace.marketWallet()).to.be.eq(
         signers[4].address
       );
+
+      await expect(singleMarketplace.connect(signers[5]).setMarketingWallet(signers[4].address)).to.be.revertedWith("NA");
+      await expect(singleMarketplace.connect(owner).setMarketingWallet(ethers.constants.AddressZero)).to.be.revertedWith("ZA");
     });
 
     it("Updating treasury wallet address", async () => {
       await singleMarketplace.settreasury(signers[4].address);
       expect(await singleMarketplace.treasury()).to.be.eq(signers[4].address);
+
+      await expect(singleMarketplace.connect(signers[5]).settreasury(signers[4].address)).to.be.revertedWith("NA");
+      await expect(singleMarketplace.connect(owner).settreasury(ethers.constants.AddressZero)).to.be.revertedWith("ZA");      
+
     });
 
     it("Updating market fee amount", async () => {
       await singleMarketplace.setMarketFee(2);
       expect(await singleMarketplace.marketFee()).to.be.eq(2);
+      await expect(singleMarketplace.connect(signers[4]).setMarketFee(10000)).to.be.revertedWith("NA");
+      await expect(singleMarketplace.connect(owner).setMarketFee(100000)).to.be.revertedWith("IV");
     });
 
-    it("transferring admin", async () => {
+   
       it("transferring admin", async () => {
-        await singleMarketplace.transferAdminRole(signers[4].address);
+        await singleMarketplace.connect(owner).transferAdminRole(signers[4].address);
         expect(await singleMarketplace.admin()).to.be.eq(signers[4].address);
+        await expect(singleMarketplace.connect(signers[5]).transferAdminRole(signers[4].address)).to.be.revertedWith("NA");
+        await expect(singleMarketplace.connect(signers[4]).transferAdminRole(ethers.constants.AddressZero)).to.be.revertedWith("ZA");
+      });
+
+      it("Reset Counter",async()=>{
+        await factory
+        .connect(owner)
+        .create721Token(
+          "TestName",
+          "TestSymbol",
+          owner.address,
+          signers[1].address
+        );
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+      const TRS = await new Template721__factory(owner).attach(Tseries);
+       
+        const seller = new SellerVoucher({
+          _contract: singleMarketplace,
+          _signer: signers[1],
+        });
+        const sellerVoucher = await seller.createVoucher(
+          Tseries,
+          signers[1].address,
+          1,
+          1,
+          expandTo6Decimals(10),
+          1,
+          true,
+          false
+        );
+        await singleMarketplace.connect(owner).resetCounter(sellerVoucher);
+        await expect(singleMarketplace.connect(signers[4]).resetCounter(sellerVoucher)).to.be.revertedWith("NA");
+      });
+
+      it("Withdrawing stuck token",async()=>{
+        let balancebefore = await usdt.balanceOf(owner.address);
+        await usdt.connect(owner).transfer(singleMarketplace.address,expandTo6Decimals(1000));
+        await singleMarketplace.connect(owner).withdrawStuckToken(usdt.address);
+        expect(await usdt.balanceOf(owner.address)).to.be.eq(balancebefore);
+        
+
       });
     });
 
     describe("Template 721 test cases", async () => {
-      // it("updating operator", async () => {
-      //   await NFT.connect(signers[1]).updateOperator(signers[4].address, true);
-      //   expect(await NFT.operators(signers[4].address)).to.be.eq(true);
-      // });
+      it("Redeem functionality", async () => {
+      const TemplateVoucher= await new LazyMinting({_contract:NFT, _signer:signers[1]});
+      const voucherNFT = await TemplateVoucher.createVoucher(signers[1].address,1,expandTo6Decimals(10),"TestURI",true,signers[2].address,expandTo6Decimals(0));
+      await expect(NFT.redeem(voucherNFT,signers[2].address)).to.be.revertedWith("IA");
+
+      const TemplateVoucher2= await new LazyMinting({_contract:NFT, _signer:signers[5]});
+      const voucherNFT2 = await TemplateVoucher2.createVoucher(NFT.address,1,expandTo6Decimals(10),"TestURI",true,signers[2].address,expandTo6Decimals(0));
+      await expect(NFT.redeem(voucherNFT2,signers[2].address)).to.be.revertedWith("IS");
+
+      const TemplateVoucher3= await new LazyMinting({_contract:NFT, _signer:signers[1]});
+      const voucherNFT3 = await TemplateVoucher3.createVoucher(NFT.address,1,expandTo6Decimals(10),"TestURI",true,ethers.constants.AddressZero,expandTo6Decimals(0));
+      await NFT.connect(signers[1]).redeem(voucherNFT3,signers[2].address);
+      expect(await NFT.exists(1)).to.be.eq(true);
+
+      const TemplateVoucher4= await new LazyMinting({_contract:NFT, _signer:signers[1]});
+      const voucherNFT4 = await TemplateVoucher4.createVoucher(NFT.address,5,expandTo6Decimals(10),"TestURI",true,signers[2].address,expandTo6Decimals(0));
+      await expect(NFT.redeem(voucherNFT4,signers[2].address)).to.be.revertedWith("ERC721: caller is not token owner nor approved");
+     
+      });
+
+      
+      
 
       it("setting admin", async () => {
         await NFT.connect(signers[1]).setAdmin(signers[4].address);
         expect(await NFT.admin()).to.be.eq(signers[4].address);
+        await expect(NFT.connect(signers[1]).setAdmin(signers[4].address)).to.be.revertedWith("NA");
+        await expect(NFT.connect(signers[4]).setAdmin(ethers.constants.AddressZero)).to.be.revertedWith("ZA");
       });
 
       it("setting creator", async () => {
         await NFT.connect(signers[1]).setCreator(signers[4].address);
         expect(await NFT.creator()).to.be.eq(signers[4].address);
+        await expect(NFT.connect(signers[4]).setCreator(signers[5].address)).to.be.revertedWith("NA");
+        await expect(NFT.connect(signers[1]).setCreator(ethers.constants.AddressZero)).to.be.revertedWith("ZA");
       });
 
       // it("setting token", async () => {
@@ -2594,28 +2669,55 @@ describe("Template", async () => {
 
     describe("Factory Test cases", async () => {
       it("updating address of template 721", async () => {
-        await factory.updateTemplate721(signers[4].address);
+        await factory.connect(owner).updateTemplate721(signers[4].address);
         let address = await factory.template721Address();
         expect(address).to.be.eq(signers[4].address);
+        await expect( factory.connect(signers[4]).updateTemplate721(signers[4].address)).to.be.revertedWith("TokenFactory: Caller not admin");
+        await expect( factory.connect(owner).updateTemplate721(ethers.constants.AddressZero)).to.be.revertedWith("Zero address sent");
       });
 
       it("updating address of template 1155", async () => {
-        await factory.updateTemplate1155(signers[4].address);
+        await factory.connect(owner).updateTemplate1155(signers[4].address);
 
         expect(await factory.template1155Address()).to.be.eq(
           signers[4].address
         );
+
+        await expect( factory.connect(signers[4]).updateTemplate1155(signers[4].address)).to.be.revertedWith("TokenFactory: Caller not admin");
+        await expect( factory.connect(owner).updateTemplate1155(ethers.constants.AddressZero)).to.be.revertedWith("Zero address sent");
       });
 
       it("Updating market place address", async () => {
-        await factory.updateMarketplace(signers[4].address);
+        await factory.connect(owner).updateMarketplace(signers[4].address);
         expect(await factory.marketplace()).to.be.eq(signers[4].address);
+
+        await expect( factory.connect(signers[4]).updateMarketplace(signers[4].address)).to.be.revertedWith("TokenFactory: Caller not admin");
+        await expect( factory.connect(owner).updateMarketplace(ethers.constants.AddressZero)).to.be.revertedWith("Zero address sent");
       });
+
       it("Updating admin address", async () => {
         await factory.updateAdmin(signers[4].address);
         expect(await factory.admin()).to.be.eq(signers[4].address);
+        await expect( factory.connect(signers[5]).updateAdmin(signers[4].address)).to.be.revertedWith("TokenFactory: Caller not admin");
+        await expect( factory.connect(owner).updateAdmin(ethers.constants.AddressZero)).to.be.revertedWith("Zero address sent");
       });
+
+      it("Updating operator",async()=>{
+        await factory.connect(owner).updateOperator(signers[4].address,true);
+        expect(await factory.operators(signers[4].address)).to.be.eq(true);
+        await expect(factory.connect(signers[5]).updateOperator(signers[4].address,true)).to.be.revertedWith("not admin");
+        await expect(factory.connect(owner).updateOperator(ethers.constants.AddressZero,true)).to.be.revertedWith("Zero address sent")
+
+      })
+
+      it("Non-operator calls template721 create function",async()=>{
+       await expect(factory.connect(signers[4]).create721Token("testName","testSymbol",signers[1].address,signers[1].address)).to.be.revertedWith("not operator")
+      });
+
+      it("Non-operator calls template1155 create function",async()=>{
+        await expect(factory.connect(signers[4]).create1155Token("TestUri",signers[1].address,signers[1].address)).to.be.revertedWith("not operator")
+       });
     });
 
   });
-});
+

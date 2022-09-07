@@ -60,7 +60,8 @@ contract Template1155 is
      * @param _admin is the new admin address
      */
     function setAdmin(address _admin) external {
-        require(msg.sender == admin, "not admin");
+        
+        require(msg.sender == admin, "NA");//Not Admin
         require(_admin != address(0));
         admin = _admin;
     }
@@ -70,7 +71,7 @@ contract Template1155 is
      * @param _creator is the new admin address
      */
     function setCreator(address _creator) external {
-        require(msg.sender == admin, "not admin");
+        require(msg.sender == admin, "NA");//Not Admin
         require(_creator != address(0));
         creator = _creator;
     }
@@ -85,9 +86,8 @@ contract Template1155 is
         address redeemer,
         uint amount
     ) external {
-        require(!redeemedCounter[_voucher.counter]);
-        require(_voucher.nftAddress == address(this));
-
+        require(!redeemedCounter[_voucher.counter],"VU");//Voucher Used
+        require(_voucher.nftAddress == address(this),"IA");//Invalid address
         address signer = _verify(_voucher);
         require(signer == admin || signer == creator);
 
@@ -106,7 +106,7 @@ contract Template1155 is
         MintNFT(
             signer,
             _voucher.tokenId,
-            _voucher.amount,
+            amount,
             _voucher.tokenUri,
             _voucher.royaltyKeeper,
             _voucher.royaltyFees
@@ -115,7 +115,7 @@ contract Template1155 is
             signer,
             redeemer,
             _voucher.tokenId,
-            _voucher.amount,
+            amount,
             ""
         );
     }

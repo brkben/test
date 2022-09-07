@@ -131,7 +131,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 _voucherNFT,
                 is721NFT
             );
-        else if (buyer.isCustodial == false && seller.isCustodial == false)
+        else
             BuyNonCustodial2NonCustodial(
                 buyer,
                 seller,
@@ -215,6 +215,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      */
     function transferAdminRole(address _admin) external {
         require(msg.sender == admin, "NA"); // not admin
+        //zero address
+        require(_admin != address(0), "ZA");
         admin = _admin;
     }
 

@@ -1,68 +1,75 @@
-import { ethers } from "hardhat";
-import {
-  Usd,
-  Usd__factory,
-  Template721,
-  Template721__factory,
-  TokenFactory,
-  TokenFactory__factory,
-  HeftyVerseMarketplace721,
-  HeftyVerseMarketplace721__factory,
-  OwnedUpgradeabilityProxy,
-  OwnedUpgradeabilityProxy__factory
-} from "../typechain";
+import { ethers,network } from "hardhat";
+
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-let usdc : Usd; 
-let temp721 : Template721; 
-let factory : TokenFactory;
-let marketPlace721 : HeftyVerseMarketplace721;
-let factoryProxy : OwnedUpgradeabilityProxy;
-let market721Proxy : OwnedUpgradeabilityProxy;
-let owner: SignerWithAddress;
-let signers: SignerWithAddress[];
+
+function sleep(ms: any) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 async function main() {
-    signers = await ethers.getSigners();
-    owner = signers[0];
-    console.log("Owner is , ", owner.address);
+    // const signers = await ethers.getSigners();
+    // const owner = "0xdb76D742488691cE76c1B8bc326fb0C8d397a2F1";
+    // console.log("Owner is , ", owner);
+    // // await sleep(4000);
 
-    usdc = await new Usd__factory(owner).deploy();
-    await usdc.deployed();
-    console.log("USDC : ",usdc.address);
-
-    temp721 = await new Template721__factory(owner).deploy();
-    await temp721.deployed();
+    const Temp721 = await ethers.getContractFactory("Template721");
+    const temp721 = await Temp721.deploy();
+    await sleep(4000);
     console.log("Template721 : ",temp721.address);
+    
 
-    factory = await new TokenFactory__factory(owner).deploy();
-    await factory.deployed();
+    const Temp1155 = await ethers.getContractFactory("Template1155");
+    const temp1155= await Temp1155.deploy();
+    await sleep(4000);
+    console.log("Template1155 : ",temp1155.address);
+
+    const factory1 = await ethers.getContractFactory("TokenFactory");
+    const factory = await factory1.deploy();
+    await sleep(4000);
     console.log("Factory : ",factory.address);
 
-    factoryProxy = await new OwnedUpgradeabilityProxy__factory(owner).deploy();
-    await factoryProxy.deployed();
-    console.log("Factory Proxy : ",factoryProxy.address);
+    const Upgradeability1 = await ethers.getContractFactory("OwnedUpgradeabilityProxy");
+    const proxy1 = await Upgradeability1.deploy();
+    await sleep(4000);
     
-    await factoryProxy.connect(owner).upgradeTo(factory.address); 
+    
+    await proxy1.upgradeTo(factory.address); 
     console.log("Factory upgraded");
-    
-    marketPlace721 = await new HeftyVerseMarketplace721__factory(owner).deploy();
-    await marketPlace721.deployed();
-    console.log("Marketplace721 : ",marketPlace721.address);
+    await sleep(4000);
 
-    market721Proxy = await new OwnedUpgradeabilityProxy__factory(owner).deploy();
-    await market721Proxy.deployed();
-    console.log("Marketplace721 Proxy : ",market721Proxy.address);
-
-    await market721Proxy.connect(owner).upgradeTo(marketPlace721.address); 
-    console.log("Marketplace721 upgraded");
+    const factoryProxy = await factory1.attach(proxy1.address);
+    await sleep(4000);
+    console.log("Factory proxy",factoryProxy.address);
     
-    let marketplace721Instance = marketPlace721.attach(market721Proxy.address);
-    await marketplace721Instance.connect(owner).initialise(owner.address,"0xa74E3ae01B9d2E3C3dAe9556d7625f2485642812",usdc.address,"0x7B6fBAa772048ed2358088c9fDbDFBb4582B15f0")
-    console.log("marketplace initialised");
+    const marketPlace1 = await  ethers.getContractFactory("SingleMarket");
+    const marketPlace = await marketPlace1.deploy();
+    await sleep(4000);
+    console.log("Single Marketplace : ",marketPlace.address);
+
+    const proxy2 = await Upgradeability1.deploy();
+    await sleep(4000);
+    console.log("proxy2", proxy2.address);
+
+    await proxy2.upgradeTo(marketPlace.address);
+    await sleep(4000);
+    console.log("Single Marketplace upgraded");
+
+    const marketProxy = await marketPlace1.attach(proxy2.address);
+    await sleep(4000);
+    console.log("Marketplace proxy",factoryProxy.address);
+    
+    let marketplaceInstance = marketPlace.attach(marketProxy.address);
+    await marketplaceInstance.initialize("0xdb76D742488691cE76c1B8bc326fb0C8d397a2F1","0xa74E3ae01B9d2E3C3dAe9556d7625f2485642812","0xA4D07ea7eb6B59F5836C8fd7535C9CF911c25cA7","0x7B6fBAa772048ed2358088c9fDbDFBb4582B15f0");
+    await sleep(4000);
+    console.log("marketplace initialized");
     
     let factoryInstance = factory.attach(factoryProxy.address);
-    await factoryInstance.connect(owner).initialize(temp721.address,temp721.address,marketPlace721.address,marketPlace721.address);
-    console.log("factory initialised");
+    await factoryInstance.initialize(temp721.address,temp1155.address,marketPlace.address);
+    await sleep(4000);
+    console.log("factory initialized");
+
+
+    
 }
 
 main()

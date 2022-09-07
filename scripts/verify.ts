@@ -2,32 +2,47 @@ const Hre = require("hardhat");
 
 async function main() {
 
-    await Hre.run("verify:verify", {
-      //Deployed contract USDT address
-      address: "0xE7f56CE5709D8A7E00561399CEcA8da658B9D2c3",
-      //Path of your main contract.
-      contract: "contracts/USDT.sol:Usd",
-    });
+    // await Hre.run("verify:verify", {
+    //   //Deployed contract Template1155 address
+    //   address: "0xcE0D63b05F56838bD8c3794fC024acD77616E5db",
+    //   //Path of your main contract.
+    //   contract: "contracts/Template1155.sol:Template1155",
+    // });
+
+    // await Hre.run("verify:verify", {
+    //   //Deployed contract Template721 address
+    //   address: "0xBF8894E01F3033FFedfBe8F4eB100805dDEE82b4",
+    //   //Path of your main contract.
+    //   contract: "contracts/Template721.sol:Template721",
+    // });
+
+    // await Hre.run("verify:verify", {
+    //   //Deployed contract Factory address
+    //   address: "0xc8b91aea5Ba42F6EAA5e7CbfaD88d585b0865640",
+    //   //Path of your main contract.
+    //   contract: "contracts/Factory.sol:TokenFactory",
+    // });
 
     await Hre.run("verify:verify", {
-      //Deployed contract TemplateNFT address
-      address: "0x1BD5EAF7C9F583181D13aEe39251D87DEA28852f",
+      //Deployed contract Marketplace address
+      address: "0x645498B8778e54585750e981a28ce19Fbe2F6A52",
       //Path of your main contract.
-      contract: "contracts/Template721.sol:Template721",
+      contract: "contracts/SingleMarket.sol:SingleMarket",
     });
 
-    await Hre.run("verify:verify", {
-      //Deployed contract Factory address
-      address: "0x1B39D391749000859f2856345A800ed219A19754",
+    await Hre.run("verify:verify",{
+      //Deployed contract MarketPlace proxy
+      address: "0x36fA1842faf8159F88506c1c5120aC8cC38aD3cd",
       //Path of your main contract.
-      contract: "contracts/Factory.sol:TokenFactory",
+      contract: "contracts/OwnedUpgradeabilityProxy.sol:OwnedUpgradeabilityProxy"
     });
 
-    await Hre.run("verify:verify", {
-      //Deployed contract Temp1155 address
-      address: "0x3F14d0F3f2321aBEEF4D306913B598F412dB61C2",
+
+    await Hre.run("verify:verify",{
+      //Deployed contract Factory proxy
+      address: "0x36fA1842faf8159F88506c1c5120aC8cC38aD3cd",
       //Path of your main contract.
-      contract: "contracts/Marketplace721.sol:HeftyVerseMarketplace721",
+      contract: "contracts/OwnedUpgradeabilityProxy.sol:OwnedUpgradeabilityProxy"
     });
 }
 main()

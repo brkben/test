@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/Template1155.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> Template1155.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">85.37% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>35/41</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">39.29% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>11/28</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">81.82% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>9/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">85% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>34/40</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-yes">1301×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">220×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">220×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">544×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-yes">168×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//SPDX-License-Identifier: MIT
+pragma solidity =0.8.14;
+&nbsp;
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
+import "contracts/Relayer/BasicMetaTransaction.sol";
+import "contracts/libraries/VoucherLib.sol";
+import "contracts/interfaces/IFactory.sol";
+&nbsp;
+contract Template1155 is
+    ERC1155URIStorageUpgradeable,
+    ERC2981Upgradeable,
+    EIP712Upgradeable,
+    BasicMetaTransaction
+{
+    bytes32 public constant SFT_VOUCHER_HASH =
+        0xfff075b1c892595cd22c001e3cc055f20114946aa21ad68c4930d4ffcf2a25ed;
+&nbsp;
+    // Admin of the contract
+    address public admin;
+&nbsp;
+    // Creator of the NFT
+    address public creator;
+&nbsp;
+    // Factory contract address
+    address public factory;
+&nbsp;
+    // Mapping of the counters that has been redeemed
+    mapping(uint256 =&gt; bool) public redeemedCounter;
+&nbsp;
+    // Mapping of the counter to the amount left in voucher
+    mapping(uint256 =&gt; uint256) public amountLeft;
+&nbsp;
+    /**
+     * @notice Initializes the contract by setting a `admin`, `creator`, `factory` and `token` for the contract
+     * @param uri is set as the uri of the deployed ERC1155
+     * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
+     * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
+     * @param _factory is set as the factory address
+     */
+    function initialize(
+        string memory uri,
+        address _creator,
+        address _admin,
+        address _factory
+    ) external initializer {
+        __ERC1155_init(uri);
+        __ERC1155URIStorage_init();
+        __ERC2981_init();
+        __EIP712_init("HeftyVerse_NFT_Voucher", "1");
+&nbsp;
+        admin = _admin;
+        creator = _creator;
+        factory = _factory;
+    }
+&nbsp;
+    /**
+     * @notice Function to change the admin of the contract
+     * @param _admin is the new admin address
+     */
+    function setAdmin(address _admin) external {
+        
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(msg.sender == admin, "NA");//Not Admin
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_admin != address(0));
+        admin = _admin;
+    }
+&nbsp;
+    /**
+     * @notice Function to change the creator of the contract
+     * @param _creator is the new admin address
+     */
+    function setCreator(address _creator) external {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(msg.sender == admin, "NA");//Not Admin
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_creator != address(0));
+        creator = _creator;
+    }
+&nbsp;
+    /**
+     * @notice Redeems an SFTvoucher for an actual SFT, creating it in the process.
+     * @param redeemer The address of the account which will receive the SFT upon success.
+     * @param _voucher A signed SFTvoucher that describes the SFT to be redeemed.
+     */
+    function redeem(
+        Voucher.SFTvoucher calldata _voucher,
+        address redeemer,
+        uint amount
+    ) external {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(!redeemedCounter[_voucher.counter],"VU");//Voucher Used
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_voucher.nftAddress == address(this),"IA");//Invalid address
+        address signer = _verify(_voucher);
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(signer == admin || signer == creator);
+&nbsp;
+        uint left = amountLeft[_voucher.counter];
+        // Handling counter and amount
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (left == 0) {
+            left = _voucher.amount - amount;
+        } else {
+<span class="cstat-no" title="statement not covered" >            left = left - amount</span>;
+        }
+&nbsp;
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (left == 0) redeemedCounter[_voucher.counter] = true;
+&nbsp;
+        amountLeft[_voucher.counter] = left;
+&nbsp;
+        MintNFT(
+            signer,
+            _voucher.tokenId,
+            amount,
+            _voucher.tokenUri,
+            _voucher.royaltyKeeper,
+            _voucher.royaltyFees
+        );
+        safeTransferFrom(
+            signer,
+            redeemer,
+            _voucher.tokenId,
+            amount,
+            ""
+        );
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function supportsInterface(bytes4 interfaceId)</span>
+        public
+        view
+        override(ERC1155Upgradeable, ERC2981Upgradeable)
+        returns (bool)
+    {
+<span class="cstat-no" title="statement not covered" >        return super.supportsInterface(interfaceId);</span>
+    }
+&nbsp;
+    /**
+     * @notice Standard safeTransferFrom function is modified to bypass the check for approval if msg sender is marketplace
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public override {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (msg.sender != IFactory(factory).marketplace())
+<span class="cstat-no" title="statement not covered" >            require(</span>
+                from == _msgSender() || isApprovedForAll(from, _msgSender()),
+                "ERC1155: not approved"
+            );
+        _safeTransferFrom(from, to, id, amount, data);
+    }
+&nbsp;
+    /**
+     * @notice Standard safeBatchTransferFrom function is modified to bypass the check for approval if msg sender is marketplace
+     */
+<span class="fstat-no" title="function not covered" >    function safeBatchTransferFrom(</span>
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public override {
+<span class="cstat-no" title="statement not covered" >        if (msg.sender != IFactory(factory).marketplace())</span>
+<span class="cstat-no" title="statement not covered" >            require(</span>
+                from == _msgSender() || isApprovedForAll(from, _msgSender()),
+                "ERC1155: not approved"
+            );
+<span class="cstat-no" title="statement not covered" >        _safeBatchTransferFrom(from, to, ids, amounts, data)</span>;
+    }
+&nbsp;
+    /**
+     * @notice Returns a hash of the given SFTvoucher, prepared using EIP712 typed data hashing rules.
+     * @param voucher is a SFTvoucher to hash.
+     */
+    function _hash(Voucher.SFTvoucher calldata voucher)
+        internal
+        view
+        returns (bytes32)
+    {
+        return
+            _hashTypedDataV4(
+                keccak256(
+                    abi.encode(
+                        SFT_VOUCHER_HASH,
+                        voucher.nftAddress,
+                        voucher.tokenId,
+                        voucher.price,
+                        voucher.amount,
+                        voucher.counter,
+                        keccak256(bytes(voucher.tokenUri)),
+                        voucher.toMint,
+                        voucher.royaltyKeeper,
+                        voucher.royaltyFees
+                    )
+                )
+            );
+    }
+&nbsp;
+    /**
+     * @notice Verifies the signature for a given SFTvoucher, returning the address of the signer.
+     * @dev Will revert if the signature is invalid.
+     * @param voucher is a SFTvoucher describing the SFT to be bought
+     */
+    function _verify(Voucher.SFTvoucher calldata voucher)
+        internal
+        view
+        returns (address)
+    {
+        bytes32 digest = _hash(voucher);
+        return ECDSAUpgradeable.recover(digest, voucher.signature);
+    }
+&nbsp;
+    function _msgSender()
+        internal
+        view
+        override(ContextUpgradeable, BasicMetaTransaction)
+        returns (address sender)
+    {
+        return super._msgSender();
+    }
+&nbsp;
+    /**
+     * @notice This is an internal function modified to mint the NFT and set the token URI and royalty info
+     * @param to is the address to which NFT will be minted
+     * @param tokenId is the ID of the NFT to be minted
+     * @param mintAmount is the amount of tokens to be minted of the same tokenID
+     * @param tokenURI is the URI of the token
+     * @param royaltyKeeper is the address to which the royalty will be sent
+     * @param royaltyFees is the royalty percentage in bps
+     */
+    function MintNFT(
+        address to,
+        uint256 tokenId,
+        uint256 mintAmount,
+        string memory tokenURI,
+        address royaltyKeeper,
+        uint96 royaltyFees
+    ) internal {
+        _mint(to, tokenId, mintAmount, "");
+        _setURI(tokenId, tokenURI);
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (royaltyKeeper != address(0)) {
+            _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
+        }
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Sep 07 2022 13:26:35 GMT+0530 (India Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
