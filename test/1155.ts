@@ -60,8 +60,146 @@ describe("singleMarketplace 1155 ",async()=>{
   //   await factory.connect(signers[2]).create721Token("hefty","hev",owner.address,superOwner.address,);
   //   });
   // });
+ 
   
-  it("custodial to custodial buy", async () => {
+it("custodial to custodial buy", async () => {
+  //create collection
+  await factory
+    .connect(owner)
+    .create1155Token(
+      "T-series",
+      owner.address,
+      superOwner.address,
+      
+    );
+
+  const Tseries = await factory
+    .connect(owner)
+    .userNFTContracts(owner.address,0);
+
+    const TRS = await new Template1155__factory(owner).attach(Tseries);
+  //creating vouchers
+  const Template1155Voucher = await new template1155Voucher({
+    _contract: TRS,
+    _signer: owner
+  });
+  const TemplateVoucher = await new LazyMinting({
+      _contract: TRS,
+      _signer: signers[1],
+    });
+
+  const voucher = await Template1155Voucher.createVoucher(Tseries,1,expandTo6Decimals(10),2,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));
+  const voucherNFT = await TemplateVoucher.createVoucher(
+      Tseries,
+      1,
+      expandTo6Decimals(10),
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+  const sellerVoucher = new SellerVoucher({
+    _contract: singleMarketplace,
+    _signer: owner
+  });
+
+  const VoucherSell = await sellerVoucher.createVoucher1155(
+    Tseries,
+    owner.address,
+    1,
+    2,
+    expandTo6Decimals(10),
+    1,
+    true,
+    true
+  );
+  const buyerVoucher = new BuyerVoucher({
+    _contract: singleMarketplace,
+    _signer: signers[6]
+  });
+  const Voucherbuy = await buyerVoucher.createVoucher1155(
+    Tseries,
+    signers[6].address,
+    1,
+    2,
+    expandTo6Decimals(10),
+    1,
+    true
+  );
+  //Primary Buy
+
+  await usdt
+    .connect(owner)
+    .transfer(signers[6].address, expandTo6Decimals(1000));
+
+  await usdt
+    .connect(owner)
+    .approve(singleMarketplace.address, expandTo6Decimals(1000));
+  await singleMarketplace.Buy(Voucherbuy,VoucherSell,voucher,voucherNFT,false);
+
+    expect(await TRS.balanceOf(signers[6].address,1)).to.be.eq(2);
+  //Secondary Buy
+
+  const Template1155Voucher2 = new template1155Voucher({
+    _contract: TRS,
+    _signer: signers[6],
+  });
+  const TemplateVoucherNFT2 = await new LazyMinting({
+      _contract: TRS,
+      _signer: signers[1],
+    });
+    const voucherNFT2 = await TemplateVoucherNFT2.createVoucher(
+      Tseries,
+      1,
+      expandTo6Decimals(10),
+      "TestURI",
+      false,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+
+  const voucher2= await Template1155Voucher2.createVoucher(Tseries,1,expandTo6Decimals(3),2,2,"testURI",false,signers[2].address,expandTo6Decimals(0)); 
+  const sellerVoucher2 = new SellerVoucher({
+    _contract: singleMarketplace,
+    _signer: signers[6],
+  });
+  const VoucherSell2 = await sellerVoucher2.createVoucher1155(
+    Tseries,
+    signers[6].address,
+    1,
+    2,
+    expandTo6Decimals(10),
+    2,
+    true,
+    true
+  );
+
+  const buyerVoucher2 = new BuyerVoucher({
+    _contract: singleMarketplace,
+    _signer: signers[7],
+  });
+  const Voucherbuy2 = await buyerVoucher2.createVoucher1155(
+    Tseries,
+    signers[7].address,
+    1,
+    2,
+    expandTo6Decimals(10),
+    2,
+    true
+  );
+  await usdt
+    .connect(owner)
+    .transfer(signers[7].address, expandTo6Decimals(1000));
+  await usdt
+    .connect(signers[7])
+    .approve(singleMarketplace.address, expandTo6Decimals(1000));
+  await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
+  await singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false);
+ expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
+});
+
+
+  it("custodial to custodial buy: royalty keeper", async () => {
     //create collection
     await factory
       .connect(owner)
@@ -87,14 +225,14 @@ describe("singleMarketplace 1155 ",async()=>{
         _signer: signers[1],
       });
 
-    const voucher = await Template1155Voucher.createVoucher(Tseries,1,expandTo6Decimals(10),2,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));
+    const voucher = await Template1155Voucher.createVoucher(Tseries,1,expandTo6Decimals(10),2,1,"TestURI",true,signers[4].address,expandTo6Decimals(0));
     const voucherNFT = await TemplateVoucher.createVoucher(
         Tseries,
         1,
         expandTo6Decimals(10),
         "TestURI",
         true,
-        signers[2].address,
+        signers[4].address,
         expandTo6Decimals(0)
       );
     const sellerVoucher = new SellerVoucher({
@@ -153,11 +291,11 @@ describe("singleMarketplace 1155 ",async()=>{
         expandTo6Decimals(10),
         "TestURI",
         false,
-        signers[2].address,
+        signers[4].address,
         expandTo6Decimals(0)
       );
   
-    const voucher2= await Template1155Voucher2.createVoucher(Tseries,1,expandTo6Decimals(3),2,2,"testURI",false,signers[2].address,expandTo6Decimals(0)); 
+    const voucher2= await Template1155Voucher2.createVoucher(Tseries,1,expandTo6Decimals(3),2,2,"testURI",false,signers[4].address,expandTo6Decimals(0)); 
     const sellerVoucher2 = new SellerVoucher({
       _contract: singleMarketplace,
       _signer: signers[6],
@@ -194,7 +332,7 @@ describe("singleMarketplace 1155 ",async()=>{
       .approve(singleMarketplace.address, expandTo6Decimals(1000));
     await TRS.connect(signers[6]).setApprovalForAll(singleMarketplace.address,true);
     await singleMarketplace.Buy(Voucherbuy2, VoucherSell2, voucher2,voucherNFT2,false);
-   expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
+    expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
   });
 
   it("ERROR custodial to custodial primary buy:invalid buyer", async () => {
@@ -2655,6 +2793,7 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
     signers[2].address,
     expandTo6Decimals(0)
   );
+
   const sellerVoucher2 = new SellerVoucher({
     _contract: singleMarketplace,
     _signer: signers[6],
@@ -2833,18 +2972,30 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
       }) 
 
       describe("setter functions",async()=>{
-      
         it("Set Admin",async()=>{
-            await template1155.connect(signers[1]).setAdmin(signers[4].address);
-            expect(await template1155.admin()).to.be.eq(signers[4].address);
-            // await template1155.setAdmin("0x0000000000000000000000000000000000000000");
-
+          await template1155.connect(signers[1]).setAdmin(signers[4].address);
+          expect(await template1155.admin()).to.be.eq(signers[4].address);
           })
+        it("Set Admin",async()=>{
+          await expect(template1155.connect(signers[1]).setAdmin("0x0000000000000000000000000000000000000000")).to.be.revertedWith("");
+          })          
+          
+        it("ERROR Set Admin: msg.sender!= Admin",async()=>{
+          await expect(template1155.connect(signers[2]).setAdmin(signers[4].address)).to.be.revertedWith("NA");
+          })
+
     
         it("Set Creator",async()=>{
           await template1155.connect(signers[1]).setCreator(signers[5].address);
           expect(await template1155.creator()).to.be.eq(signers[5].address);
         });
+        it("ERROR Set Creator: creator != address(0)",async()=>{
+          await expect(template1155.connect(signers[1]).setCreator("0x0000000000000000000000000000000000000000")).to.be.revertedWith("");
+        })
+        it("ERROR Set Creator : msg.sender!= Admin",async()=>{
+          await expect(template1155.connect(signers[2]).setCreator(signers[4].address)).to.be.revertedWith("NA");
+        })
+
 
         it("updating token address",async()=>{
           await singleMarketplace.setToken(signers[4].address);
@@ -2870,6 +3021,70 @@ it("ERROR non custodial to non custodial buy: invalid buyer", async () => {
           await singleMarketplace.transferAdminRole(signers[4].address);
           expect(await singleMarketplace.admin()).to.be.eq(signers[4].address);
       })
-      })
+
+      it("Non-operator calls template1155 create function",async()=>{
+        await expect(factory.connect(signers[4]).create1155Token("TestUri",signers[1].address,signers[1].address)).to.be.revertedWith("not operator")
+       });
+       it("ERROR Redeem: Invalid address", async () => {
+        const Template1155Voucher = await new template1155Voucher({_contract: template1155,_signer: signers[1]});
+        const voucher = await Template1155Voucher.createVoucher(signers[1].address,1,expandTo6Decimals(10),2,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));
+        await expect(template1155.redeem(voucher,signers[2].address,expandTo6Decimals(5))).to.be.revertedWith("IA");
+      });
+    
+      it("ERROR Redeem: Invalid signer", async () => {
+      const Template1155Voucher2= await new template1155Voucher({_contract:template1155, _signer:signers[5]});
+      const voucher2 = await Template1155Voucher2.createVoucher(template1155.address,1,expandTo6Decimals(10),2,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));
+      await expect(template1155.redeem(voucher2,signers[2].address,expandTo6Decimals(5))).to.be.revertedWith("");
+      });
+    
+      it("ERROR Redeem: Voucher used", async () => {
+      const Template1155Voucher3= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
+      const voucher3= await Template1155Voucher3.createVoucher(template1155.address,1,expandTo6Decimals(10),1,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));    
+      // await template1155.isApprovedForAll(template1155
+      await template1155.connect(signers[1]).redeem(voucher3,signers[2].address,1);
+      await expect(template1155.connect(signers[1]).redeem(voucher3,signers[3].address,1)).to.be.revertedWith("VU");
+    });
+    
+    it("ERROR Redeem: Voucher used", async () => {
+      const Template1155Voucher3= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
+      const voucher3= await Template1155Voucher3.createVoucher(template1155.address,1,expandTo6Decimals(10),1,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));    
+      // await template1155.isApprovedForAll(template1155
+      await template1155.connect(signers[1]).redeem(voucher3,signers[2].address,1);
+      await expect(template1155.connect(signers[1]).redeem(voucher3,signers[3].address,1)).to.be.revertedWith("VU");
+    });
+    
+    it("ERROR Redeem: Voucher used", async () => {
+      const Template1155Voucher3= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
+      const voucher3= await Template1155Voucher3.createVoucher(template1155.address,1,expandTo6Decimals(10),1,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));    
+      // await template1155.isApprovedForAll(template1155
+      await expect(template1155.redeem(voucher3,signers[2].address,1)).to.be.revertedWith("ERC1155: not approved");
+    });
+    
+    it("Redeem: Voucher amounts ", async () => {
+      const Template1155Voucher3= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
+      const voucher3= await Template1155Voucher3.createVoucher(template1155.address,1,expandTo6Decimals(10),3,1,"TestURI",true,"0x0000000000000000000000000000000000000000",expandTo6Decimals(0));    
+      await template1155.connect(signers[1]).redeem(voucher3,signers[2].address,1);
+      await template1155.connect(signers[1]).redeem(voucher3,signers[3].address,1);
+      await template1155.connect(signers[1]).redeem(voucher3,signers[5].address,1);
+    });
+    it("safeBatchTransferFrom ", async () => {
+      const Template1155Voucher= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
+      const voucher= await Template1155Voucher.createVoucher(template1155.address,1,expandTo6Decimals(10),2,1,"TestURI",true,"0x0000000000000000000000000000000000000000",expandTo6Decimals(0));
+      const voucher2= await Template1155Voucher.createVoucher(template1155.address,2,expandTo6Decimals(10),3,1,"TestURI",true,"0x0000000000000000000000000000000000000000",expandTo6Decimals(0));
+      await template1155.connect(signers[1]).redeem(voucher,signers[2].address,1);
+      await template1155.connect(signers[1]).redeem(voucher2,signers[2].address,1);
+      await template1155.connect(signers[2]).safeBatchTransferFrom(signers[2].address,signers[3].address,[1,2],[1,1],[]);
+    });
+
+    it("ERROR safeBatchTransferFrom: ERC1155: not approved ", async () => {
+      const Template1155Voucher= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
+      const voucher= await Template1155Voucher.createVoucher(template1155.address,1,expandTo6Decimals(10),2,1,"TestURI",true,"0x0000000000000000000000000000000000000000",expandTo6Decimals(0));
+      const voucher2= await Template1155Voucher.createVoucher(template1155.address,2,expandTo6Decimals(10),3,1,"TestURI",true,"0x0000000000000000000000000000000000000000",expandTo6Decimals(0));
+      await template1155.connect(signers[1]).redeem(voucher,signers[2].address,1);
+      await template1155.connect(signers[1]).redeem(voucher2,signers[2].address,1);
+      await expect(template1155.safeBatchTransferFrom(signers[2].address,signers[3].address,[1,2],[1,1],[])).to.be.revertedWith("ERC1155: not approved");
+    
+    });
+    })
 });
  });

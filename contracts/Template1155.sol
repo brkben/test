@@ -96,6 +96,7 @@ contract Template1155 is
         if (left == 0) {
             left = _voucher.amount - amount;
         } else {
+            require(left >=0,"ALZ"); //Amount  leftless than zero
             left = left - amount;
         }
 
