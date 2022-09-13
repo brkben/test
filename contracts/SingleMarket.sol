@@ -339,17 +339,9 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             // Price Invalid
             require(_voucher.price <= buyer.pricePaid, "PI");
             // Counter Invalid
-            require(
-                buyer.counter == seller.counter &&
-                    seller.counter == _voucher.counter,
-                "CI"
-            );
+            require(buyer.counter == seller.counter,"CI");
             //Amounts invalid
-            require(
-                buyer.amount == seller.amount &&
-                    seller.amount == _voucher.amount,
-                "AMI"
-            );
+            require(buyer.amount == seller.amount,"AMI");
         }
     }
 
@@ -702,9 +694,9 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         if (leftCounter == 0) {
             leftCounter = seller.amount - buyer.amount;
         } else {
-            require(leftCounter>=0,"ALZ"); //Amount left less than zero
             leftCounter = leftCounter - buyer.amount;
         }
+        require(leftCounter>=0,"ALZ"); //Amount left less than zero
         if (leftCounter == 0) usedCounters[seller.counter] = true;
     }
 

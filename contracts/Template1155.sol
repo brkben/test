@@ -96,10 +96,10 @@ contract Template1155 is
         if (left == 0) {
             left = _voucher.amount - amount;
         } else {
-            require(left >=0,"ALZ"); //Amount  leftless than zero
             left = left - amount;
         }
 
+        require(left >=0,"ALZ"); //Amount  leftless than zero
         if (left == 0) redeemedCounter[_voucher.counter] = true;
 
         amountLeft[_voucher.counter] = left;
