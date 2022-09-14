@@ -329,6 +329,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             );
             //Prices invalid
             require(_voucherNFT.price <= buyer.pricePaid, "PI");
+            //Amounts invalid
+            require(buyer.amount == seller.amount,"AMI");
         } else {
             // Address Invalid
             require(
@@ -340,8 +342,6 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             require(_voucher.price <= buyer.pricePaid, "PI");
             // Counter Invalid
             require(buyer.counter == seller.counter,"CI");
-            //Amounts invalid
-            require(buyer.amount == seller.amount,"AMI");
         }
     }
 
