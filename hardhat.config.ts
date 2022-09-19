@@ -33,13 +33,13 @@ export default {
       allowUnlimitedContractSize: true,
 
     },
-    mumbaitest: {
-      url: " https://rpc-mumbai.maticvigil.com/",
-      accounts: [`0x${process.env.PVTKEY}`]
-    },
-    localhost: {
-      url: "http://127.0.0.1:8545",
-    },
+    // mumbaitest: {
+    //   url: " https://rpc-mumbai.maticvigil.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
+    // localhost: {
+    //   url: "http://127.0.0.1:8545",
+    // },
     // rinkeby: {
     //   url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
     //   accounts: [`0x${process.env.PVTKEY}`],

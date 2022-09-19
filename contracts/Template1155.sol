@@ -8,11 +8,8 @@ import "contracts/Relayer/BasicMetaTransaction.sol";
 import "contracts/libraries/VoucherLib.sol";
 import "contracts/interfaces/IFactory.sol";
 
-contract Template1155 is
-    ERC1155URIStorageUpgradeable,
-    ERC2981Upgradeable,
-    EIP712Upgradeable,
-    BasicMetaTransaction
+contract Template1155 is ERC1155URIStorageUpgradeable,ERC2981Upgradeable,
+    EIP712Upgradeable,BasicMetaTransaction
 {
     bytes32 public constant SFT_VOUCHER_HASH =
         0xfff075b1c892595cd22c001e3cc055f20114946aa21ad68c4930d4ffcf2a25ed;
@@ -32,6 +29,16 @@ contract Template1155 is
     // Mapping of the counter to the amount left in voucher
     mapping(uint256 => uint256) public amountLeft;
 
+    function initialize( 
+        string memory uri, address _creator, address _admin, address _factory
+    ) external initializer {
+    __ERC1155_init(uri); __ERC1155URIStorage_init();
+    __ERC2981_init(); __EIP712_init("HeftyVerse_NFT_Voucher", "1");
+    admin = _admin;
+    creator = _creator;
+    factory = _factory;
+    }
+
     /**
      * @notice Initializes the contract by setting a `admin`, `creator`, `factory` and `token` for the contract
      * @param uri is set as the uri of the deployed ERC1155
@@ -39,21 +46,7 @@ contract Template1155 is
      * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
      * @param _factory is set as the factory address
      */
-    function initialize(
-        string memory uri,
-        address _creator,
-        address _admin,
-        address _factory
-    ) external initializer {
-        __ERC1155_init(uri);
-        __ERC1155URIStorage_init();
-        __ERC2981_init();
-        __EIP712_init("HeftyVerse_NFT_Voucher", "1");
-
-        admin = _admin;
-        creator = _creator;
-        factory = _factory;
-    }
+   
 
     /**
      * @notice Function to change the admin of the contract
@@ -62,7 +55,7 @@ contract Template1155 is
     function setAdmin(address _admin) external {
         
         require(msg.sender == admin, "NA");//Not Admin
-        require(_admin != address(0));
+        require(_admin != address(0),"ZA");//Zero Address
         admin = _admin;
     }
 
@@ -72,7 +65,7 @@ contract Template1155 is
      */
     function setCreator(address _creator) external {
         require(msg.sender == admin, "NA");//Not Admin
-        require(_creator != address(0));
+        require(_creator != address(0),"ZA");//Zero Address
         creator = _creator;
     }
 
@@ -86,38 +79,24 @@ contract Template1155 is
         address redeemer,
         uint amount
     ) external {
-        require(!redeemedCounter[_voucher.counter],"VU");//Voucher Used
+        require(!redeemedCounter[_voucher.counter],'VU');//Voucher Used
         require(_voucher.nftAddress == address(this),"IA");//Invalid address
         address signer = _verify(_voucher);
-        require(signer == admin || signer == creator);
-
+        require(signer == admin || signer == creator,"IS");//Signer invalid
         uint left = amountLeft[_voucher.counter];
         // Handling counter and amount
         if (left == 0) {
             left = _voucher.amount - amount;
         } else {
+            require(left >=0,"ALZ"); //Amount  leftless than zero
             left = left - amount;
         }
-
-        require(left >=0,"ALZ"); //Amount  leftless than zero
         if (left == 0) redeemedCounter[_voucher.counter] = true;
-
         amountLeft[_voucher.counter] = left;
-
-        MintNFT(
-            signer,
-            _voucher.tokenId,
-            amount,
-            _voucher.tokenUri,
-            _voucher.royaltyKeeper,
-            _voucher.royaltyFees
+        MintNFT(signer, _voucher.tokenId,amount,_voucher.tokenUri,
+        _voucher.royaltyKeeper,_voucher.royaltyFees
         );
-        safeTransferFrom(
-            signer,
-            redeemer,
-            _voucher.tokenId,
-            amount,
-            ""
+        safeTransferFrom(signer,redeemer,_voucher.tokenId,amount,""
         );
     }
 
@@ -143,7 +122,7 @@ contract Template1155 is
         if (msg.sender != IFactory(factory).marketplace())
             require(
                 from == _msgSender() || isApprovedForAll(from, _msgSender()),
-                "ERC1155: not approved"
+                "ERC1155:caller is not token owner nor approved"
             );
         _safeTransferFrom(from, to, id, amount, data);
     }
