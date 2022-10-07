@@ -146,7 +146,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      * @param seller is a HeftyVerseSeller describing the NFT to be sold
      */
     function resetCounter(HeftyVerseSeller memory seller) external {
-        require(msg.sender == admin, "NA"); //not admin
+        // require(msg.sender == admin, "NA"); //not admin
         amountLeft[seller.counter] = 0;
         usedCounters[seller.counter] = true;
     }
@@ -330,7 +330,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             //Prices invalid
             require(_voucherNFT.price <= buyer.pricePaid, "PI");
             //Amounts invalid
-            require(buyer.amount == seller.amount,"AMI");
+            require(buyer.amount <= seller.amount, "AMI");
         } else {
             // Address Invalid
             require(
@@ -341,7 +341,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             // Price Invalid
             require(_voucher.price <= buyer.pricePaid, "PI");
             // Counter Invalid
-            require(buyer.counter == seller.counter,"CI");
+            require(buyer.counter == seller.counter, "CI");
         }
     }
 
@@ -390,8 +390,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 ISFTTemplate(seller.nftAddress).safeTransferFrom(
                     seller.owner,
                     buyer.buyer,
-                    seller.tokenID,
-                    seller.amount,
+                    buyer.tokenID,
+                    buyer.amount,
                     ""
                 );
             }
@@ -478,8 +478,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 ISFTTemplate(seller.nftAddress).safeTransferFrom(
                     seller.owner,
                     buyer.buyer,
-                    seller.tokenID,
-                    seller.amount,
+                    buyer.tokenID,
+                    buyer.amount,
                     ""
                 );
 
@@ -565,8 +565,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 ISFTTemplate(seller.nftAddress).safeTransferFrom(
                     seller.owner,
                     buyer.buyer,
-                    seller.tokenID,
-                    seller.amount,
+                    buyer.tokenID,
+                    buyer.amount,
                     ""
                 );
 
@@ -640,8 +640,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 ISFTTemplate(seller.nftAddress).safeTransferFrom(
                     seller.owner,
                     buyer.buyer,
-                    seller.tokenID,
-                    seller.amount,
+                    buyer.tokenID,
+                    buyer.amount,
                     ""
                 );
 
@@ -696,7 +696,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         } else {
             leftCounter = leftCounter - buyer.amount;
         }
-        require(leftCounter>=0,"ALZ"); //Amount left less than zero
+        require(leftCounter >= 0, "ALZ"); //Amount left less than zero
         if (leftCounter == 0) usedCounters[seller.counter] = true;
     }
 
@@ -730,7 +730,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 ISFTTemplate(seller.nftAddress).balanceOf(
                     seller.owner,
                     seller.tokenID
-                ) >= seller.amount,
+                ) >= buyer.amount,
                 "NO"
             );
             (receiver, royaltyAmount) = ISFTTemplate(seller.nftAddress)
