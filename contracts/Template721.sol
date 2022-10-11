@@ -26,6 +26,12 @@ contract Template721 is
     // Factory contract address
     address public factory;
 
+    // Max Supply
+    uint public maxSupply;
+
+    // Total Supply 
+    uint public totalSupply;
+
     /**
      * @notice Initializes the contract by setting a `admin`, `creator`and `factory` for the contract
      * @param _name is set as the name of the deployed ERC721
@@ -39,7 +45,8 @@ contract Template721 is
         string memory _symbol,
         address _creator,
         address _admin,
-        address _factory
+        address _factory,
+        uint _maxSupply
     ) external initializer {
         __ERC721_init(_name, _symbol);
         __ERC721URIStorage_init();
@@ -49,6 +56,7 @@ contract Template721 is
         admin = _admin;
         creator = _creator;
         factory = _factory;
+        maxSupply = _maxSupply;
     }
 
     /**
@@ -190,8 +198,10 @@ contract Template721 is
         address royaltyKeeper,
         uint96 royaltyFees
     ) internal {
+        require(totalSupply <= maxSupply, "Template721: max limit exceed");
         _safeMint(to, tokenId, "");
         _setTokenURI(tokenId, tokenURI);
+        totalSupply++;
         if (royaltyKeeper != address(0)) {
             _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
         }

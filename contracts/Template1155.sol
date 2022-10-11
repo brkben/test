@@ -29,6 +29,13 @@ contract Template1155 is ERC1155URIStorageUpgradeable,ERC2981Upgradeable,
     // Mapping of the counter to the amount left in voucher
     mapping(uint256 => uint256) public amountLeft;
 
+    /**
+     * @notice Initializes the contract by setting a `admin`, `creator`, `factory` and `token` for the contract
+     * @param uri is set as the uri of the deployed ERC1155
+     * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
+     * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
+     * @param _factory is set as the factory address
+     */
     function initialize( 
         string memory uri, address _creator, address _admin, address _factory
     ) external initializer {
@@ -38,15 +45,6 @@ contract Template1155 is ERC1155URIStorageUpgradeable,ERC2981Upgradeable,
     creator = _creator;
     factory = _factory;
     }
-
-    /**
-     * @notice Initializes the contract by setting a `admin`, `creator`, `factory` and `token` for the contract
-     * @param uri is set as the uri of the deployed ERC1155
-     * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
-     * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
-     * @param _factory is set as the factory address
-     */
-   
 
     /**
      * @notice Function to change the admin of the contract
@@ -65,7 +63,7 @@ contract Template1155 is ERC1155URIStorageUpgradeable,ERC2981Upgradeable,
      */
     function setCreator(address _creator) external {
         require(msg.sender == admin, "NA");//Not Admin
-        require(_creator != address(0),"ZA");//Zero Address
+        // require(_creator != address(0),"ZA");//Zero Address
         creator = _creator;
     }
 

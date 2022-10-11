@@ -62,7 +62,8 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         string memory name,
         string memory symbol,
         address _admin,
-        address _creator
+        address _creator,
+        uint _maxSupply
     ) external returns (address token) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
@@ -76,7 +77,8 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
             symbol,
             _admin,
             _creator,
-            address(this)
+            address(this),
+            _maxSupply
         );
 
         emit ERC721Created(token, name, symbol);

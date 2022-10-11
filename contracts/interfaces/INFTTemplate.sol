@@ -9,7 +9,7 @@ interface INFTTemplate is IERC721Upgradeable, IERC2981
     function creator() external returns(address);
     function admin() external returns(address);
     
-    function initialize(string memory name ,string memory symbol,address _admin,address _superAdmin, address _marketplace)external ;
+    function initialize(string memory name ,string memory symbol,address _admin,address _superAdmin, address _marketplace,uint _maxSupply)external ;
 
     function supportsInterface(bytes4 interfaceId) override(IERC165Upgradeable,IERC165) external view returns (bool);
     function redeem(Voucher.NFTvoucher calldata _voucher, address redeemer) external;
