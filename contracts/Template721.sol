@@ -29,7 +29,7 @@ contract Template721 is
     // Max Supply
     uint public maxSupply;
 
-    // Total Supply 
+    // Total Supply
     uint public totalSupply;
 
     /**
@@ -67,9 +67,9 @@ contract Template721 is
     function redeem(Voucher.NFTvoucher calldata _voucher, address redeemer)
         external
     {
-        require(_voucher.nftAddress == address(this), "IA");//invalid address
+        require(_voucher.nftAddress == address(this), "IA"); //invalid address
         address signer = _verify(_voucher);
-        require(signer == admin || signer == creator, "IS");//invalid signer
+        require(signer == admin || signer == creator, "IS"); //invalid signer
         MintNFT(
             signer,
             _voucher.tokenId,
@@ -86,7 +86,7 @@ contract Template721 is
      */
     function setAdmin(address _admin) external {
         require(msg.sender == admin, "NA"); //not admin
-        require(_admin != address(0), "ZA");//zero address
+        require(_admin != address(0), "ZA"); //zero address
         admin = _admin;
     }
 
@@ -95,8 +95,8 @@ contract Template721 is
      * @param _creator is the new admin address
      */
     function setCreator(address _creator) external {
-        require(msg.sender == admin, "NA");//not admin
-        require(_creator != address(0), "ZA");//zero address
+        require(msg.sender == admin, "NA"); //not admin
+        require(_creator != address(0), "ZA"); //zero address
         creator = _creator;
     }
 
@@ -206,5 +206,4 @@ contract Template721 is
             _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
         }
     }
-
 }
