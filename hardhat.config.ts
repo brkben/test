@@ -23,7 +23,7 @@ export default {
     disambiguatePaths: false,
     runOnCompile: true,
     strict: false,
-    only: ['Factory', 'Marketplace721', 'Marketplace1155', 'Template721', 'Template1155', 'SingleMarket', 'SingleMarketPlace2', 'SingleMarketPlace3']
+    only: ['Factory', 'Marketplace721', 'Marketplace1155', 'Template721', 'Template1155', 'SingleMarket', 'SingleMarketPlace2', 'SingleMarketPlace3','Airdrop']
   },
 
 
@@ -35,6 +35,10 @@ export default {
     },
     mumbaitest: {
       url: " https://rpc-mumbai.maticvigil.com/",
+      accounts: [`0x${process.env.PVTKEY}`]
+    },
+    matic: {
+      url: "https://polygon-rpc.com/",
       accounts: [`0x${process.env.PVTKEY}`]
     },
     // localhost: {

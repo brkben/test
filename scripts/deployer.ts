@@ -23,14 +23,15 @@ async function main() {
     // await sleep(4000);
     // console.log("Template1155 : ",temp1155.address);
 
-    const factory1 = await ethers.getContractFactory("TokenFactory");
-    const factory = await factory1.deploy();
-    await sleep(4000);
-    console.log("Factory : ",factory.address);
+    // const factory1 = await ethers.getContractFactory("TokenFactory");
+    // const factory = await factory1.deploy();
+    // await sleep(4000);
+    // console.log("Factory : ",factory.address);
 
     // const Upgradeability1 = await ethers.getContractFactory("OwnedUpgradeabilityProxy");
     // const proxy1 = await Upgradeability1.deploy();
     // await sleep(4000);
+    // console.log("Factory proxy: ", proxy1.address)
     
     
     // await proxy1.upgradeTo(factory.address); 
@@ -41,10 +42,10 @@ async function main() {
     // await sleep(4000);
     // console.log("Factory proxy",factoryProxy.address);
     
-    // const marketPlace1 = await  ethers.getContractFactory("SingleMarket");
-    // const marketPlace = await marketPlace1.deploy();
-    // await sleep(4000);
-    // console.log("Single Marketplace : ",marketPlace.address);
+    const marketPlace1 = await  ethers.getContractFactory("SingleMarket");
+    const marketPlace = await marketPlace1.deploy();
+    await sleep(4000);
+    console.log("Single Marketplace : ",marketPlace.address);
 
     // const proxy2 = await Upgradeability1.deploy();
     // await sleep(4000);
