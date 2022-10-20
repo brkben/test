@@ -30,7 +30,7 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
     // Mapping of the operator which have specific accesses
     mapping(address => bool) public operators;
 
-    event ERC721Created(address indexed token, string name, string symbol);
+    event ERC721Created(address indexed token, string name, string symbol, uint maxSupply);
     event ERC1155Created(address indexed token, string uri);
 
     /**
@@ -56,7 +56,8 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
      * @param name is set as the name of the deployed ERC721
      * @param symbol is set as the symbol of the deployed ERC721
      * @param _admin is set as the admin of the deployed ERC721 which will be the creator itself
-     * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
+     * @param _creator is set as the admin of the deployed ERC721 which will be the creator itself
+     * @param _maxSupply is set as the maximum supply of the ERC721
      */
     function create721Token(
         string memory name,
@@ -81,7 +82,7 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
             _maxSupply
         );
 
-        emit ERC721Created(token, name, symbol);
+        emit ERC721Created(token, name, symbol, _maxSupply);
     }
 
     /**

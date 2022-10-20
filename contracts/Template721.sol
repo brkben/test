@@ -39,6 +39,7 @@ contract Template721 is
      * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
      * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
      * @param _factory is set as the factory address
+     * @param _maxSupply is set as the maximum supply
      */
     function initialize(
         string memory _name,
@@ -74,7 +75,7 @@ contract Template721 is
             signer,
             _voucher.tokenId,
             _voucher.tokenUri,
-            address(_voucher.royaltyKeeper),
+            _voucher.royaltyKeeper,
             _voucher.royaltyFees
         );
         transferFrom(signer, redeemer, _voucher.tokenId);

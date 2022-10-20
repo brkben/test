@@ -146,7 +146,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      * @param seller is a HeftyVerseSeller describing the NFT to be sold
      */
     function resetCounter(HeftyVerseSeller memory seller) external {
-        // require(msg.sender == admin, "NA"); //not admin
+        require(msg.sender == seller.owner, "NA"); //not owner
         amountLeft[seller.counter] = 0;
         usedCounters[seller.counter] = true;
     }
@@ -176,7 +176,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     }
 
     /**
-     * @notice Function to set new address for market wallet
+     * @notice Function to set new address for treasury wallet
      * @param _wallet is the new wallet address where marketplace fee will be sent
      */
     function settreasury(address _wallet) external {
