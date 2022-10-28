@@ -33,17 +33,20 @@ export default {
       allowUnlimitedContractSize: true,
 
     },
-    mumbaitest: {
-      url: " https://rpc-mumbai.maticvigil.com/",
-      accounts: [`0x${process.env.PVTKEY}`]
-    },
-    matic: {
-      url: "https://polygon-rpc.com/",
-      accounts: [`0x${process.env.PVTKEY}`]
-    },
+    // mumbaitest: {
+    //   url: " https://rpc-mumbai.maticvigil.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
+    // matic: {
+    //   url: "https://polygon-rpc.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
     // localhost: {
     //   url: "http://127.0.0.1:8545",
     // },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+    },
     // rinkeby: {
     //   url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
     //   accounts: [`0x${process.env.PVTKEY}`],
@@ -57,9 +60,9 @@ export default {
     //   },
     // },
   },
-  etherscan: {
-    apiKey: process.env.API_FOR_MUMBAI,
-  },
+  // etherscan: {
+  //   apiKey: process.env.API_FOR_MUMBAI,
+  // },
   solidity: "0.8.14",
   typechain: {
     outDir: "typechain",

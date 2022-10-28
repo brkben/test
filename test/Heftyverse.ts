@@ -55,7 +55,8 @@ describe("Template", async () => {
       "testSymbol",
       owner.address,
       superOwner.address,
-      factory.address
+      factory.address,
+      1000000
     );
     await template1155.initialize(
       "testURI",
@@ -79,7 +80,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          1000000
           
         );
       const Tseries = await factory
@@ -239,7 +241,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
           
         );
       const Tseries = await factory
@@ -405,7 +408,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          1000000
         );
       const Tseries = await factory
         .connect(owner)
@@ -570,7 +574,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -738,7 +743,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address, 
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -829,7 +835,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -921,7 +928,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address, 
+          1000000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1013,7 +1021,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1106,7 +1115,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address, 
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1197,7 +1207,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1357,7 +1368,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1520,7 +1532,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address,
+          1000000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1611,7 +1624,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1772,7 +1786,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address, 
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -1936,7 +1951,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -2028,8 +2044,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
-        );
+          signers[1].address,
+          100000        );
       const Tseries = await factory
         .connect(owner)
         .userNFTContracts(owner.address, 0);
@@ -2155,7 +2171,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -2260,7 +2277,8 @@ describe("Template", async () => {
           "T-series",
           "TSR",
           owner.address,
-          superOwner.address
+          superOwner.address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -2322,7 +2340,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          10000
         );
       const Tseries = await factory
         .connect(owner)
@@ -2425,7 +2444,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -2571,7 +2591,8 @@ describe("Template", async () => {
           "TestName",
           "TestSymbol",
           owner.address,
-          signers[1].address
+          signers[1].address,
+          100000
         );
       const Tseries = await factory
         .connect(owner)
@@ -2592,7 +2613,7 @@ describe("Template", async () => {
           true,
           false
         );
-        await singleMarketplace.connect(owner).resetCounter(sellerVoucher);
+        await singleMarketplace.connect(signers[1]).resetCounter(sellerVoucher);
         await expect(singleMarketplace.connect(signers[4]).resetCounter(sellerVoucher)).to.be.revertedWith("NA");
       });
 
@@ -2694,7 +2715,7 @@ describe("Template", async () => {
       })
 
       it("Non-operator calls template721 create function",async()=>{
-       await expect(factory.connect(signers[4]).create721Token("testName","testSymbol",signers[1].address,signers[1].address)).to.be.revertedWith("not operator")
+       await expect(factory.connect(signers[4]).create721Token("testName","testSymbol",signers[1].address,signers[1].address, 100000)).to.be.revertedWith("not operator")
       });
 
       it("Non-operator calls template1155 create function",async()=>{
@@ -2722,9 +2743,9 @@ describe("Template", async () => {
       it("Non admin calls setCreator",async()=>{
         await expect(template1155.connect(signers[2]).setCreator(signers[4].address)).to.be.revertedWith("NA");
       })
-      it("Creator set as Zero address",async()=>{
-        await expect(template1155.connect(signers[1]).setCreator(ethers.constants.AddressZero)).to.be.revertedWith("ZA");
-      })
+      // it("Creator set as Zero address",async()=>{
+      //   await expect(template1155.connect(signers[1]).setCreator(ethers.constants.AddressZero)).to.be.revertedWith("ZA");
+      // })
       it("Voucher already used", async () => {
         const Template1155Voucher3= await new template1155Voucher({_contract:template1155, _signer:signers[1]});
         const voucher3= await Template1155Voucher3.createVoucher(template1155.address,1,expandTo6Decimals(10),1,1,"TestURI",true,signers[2].address,expandTo6Decimals(0));    
