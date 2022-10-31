@@ -317,7 +317,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         bool is721Nft
     ) internal view {
         //invalid Seller
-        require(seller.owner == _verifySeller(seller), "IS");
+        require(seller.owner == _verifySeller(seller), "ISA");
         // invalid Buyer
         require(buyer.buyer == _verifyBuyer(buyer), "IB");
         if (is721Nft) {
@@ -330,7 +330,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             //Prices invalid
             require(_voucherNFT.price <= buyer.pricePaid, "PI");
             //Amounts invalid
-            require(buyer.amount == seller.amount, "AMI");
+            require(buyer.amount >= seller.amount, "AMI");
         } else {
             // Address Invalid
             require(

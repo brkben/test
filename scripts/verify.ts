@@ -25,7 +25,7 @@ async function main() {
 
     await Hre.run("verify:verify", {
       //Deployed contract Marketplace address
-      address: "0x86041e5e7E57e91CA57f15217F35e2e6aA03BC2d",
+      address: "0xA5Aab1dEEd19173EC2F457A34dB9b1b32969A960",
       //Path of your main contract.
       contract: "contracts/SingleMarket.sol:SingleMarket",
     });

@@ -44,8 +44,10 @@ async function main() {
     
     const marketPlace1 = await  ethers.getContractFactory("SingleMarket");
     const marketPlace = await marketPlace1.deploy();
+    // let trx = await marketPlace1.;
     await sleep(4000);
     console.log("Single Marketplace : ",marketPlace.address);
+    // console.log("Trx : ",trx);
 
     // const proxy2 = await Upgradeability1.deploy();
     // await sleep(4000);

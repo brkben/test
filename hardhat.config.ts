@@ -38,8 +38,10 @@ export default {
       accounts: [`0x${process.env.PVTKEY}`]
     },
     matic: {
-      url: "https://polygon-rpc.com/",
+      url: "https://polygon-mainnet.g.alchemy.com/v2/_BdD1r9f0l6NfODQI-BtleaSysMPMF-2",
       accounts: [`0x${process.env.PVTKEY}`]
+      // gasPrice: 150000000000
+
     },
     // localhost: {
     //   url: "http://127.0.0.1:8545",
