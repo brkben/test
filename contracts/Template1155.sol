@@ -70,7 +70,7 @@ contract Template1155 is
      */
     function setCreator(address _creator) external {
         require(msg.sender == admin, "NA"); //Not Admin
-        // require(_creator != address(0),"ZA");//Zero Address
+        require(_creator != address(0),"ZA");//Zero Address
         creator = _creator;
     }
 

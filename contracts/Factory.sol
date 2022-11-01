@@ -83,8 +83,8 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         INFTTemplate(tokenProxy).initialize(
             name,
             symbol,
-            _admin,
             _creator,
+            _admin,
             address(this),
             _maxSupply
         );
