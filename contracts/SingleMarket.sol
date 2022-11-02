@@ -206,7 +206,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      */
     function withdrawStuckToken(address _token,bool _isMatic) external {
         uint256 _amount;
-        if(_isMatic){
+        if(!_isMatic){
             _amount = IERC20Upgradeable(_token).balanceOf(address(this));
             IERC20Upgradeable(_token).transfer(admin, _amount);
         } else {
