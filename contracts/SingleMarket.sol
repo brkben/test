@@ -202,18 +202,10 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     /**
      * @notice Function to withdraw stuck tokens from the contract
      * @param _token is the token to be withdrawn
-     * @param _isMatic is to check if matic is removed
      */
-    function withdrawStuckToken(address _token,bool _isMatic) external {
-        uint256 _amount;
-        if(!_isMatic){
-            _amount = IERC20Upgradeable(_token).balanceOf(address(this));
-            IERC20Upgradeable(_token).transfer(admin, _amount);
-        } else {
-            _amount = address(this).balance;
-            (bool success, ) = admin.call{value: _amount}("");
-            require(success,"NS");
-        }
+    function withdrawStuckToken(address _token) external {
+        uint256 _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+        IERC20Upgradeable(_token).transfer(admin, _amount);
         emit TokenWithdrawn(_amount);
     }
 
