@@ -705,7 +705,10 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             leftCounter = leftCounter - buyer.amount;
         }
         require(leftCounter >= 0, "ALZ"); //Amount left less than zero
+        
+        amountLeft[seller.counter] = leftCounter;
         if (leftCounter == 0) usedCounters[seller.counter] = true;
+
     }
 
     /**
