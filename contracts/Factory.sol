@@ -5,6 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./interfaces/INFTTemplate.sol";
 import "./interfaces/ISFTTemplate.sol";
+import "./interfaces/IProxy.sol";
 import "./Relayer/BasicMetaTransaction.sol";
 import "./libraries/VoucherLib.sol";
 
@@ -17,6 +18,9 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
 
     // Template of ERC1155
     address public template1155Address;
+
+    // Template of proxy
+    address public proxy;
 
     // Marketplace address
     address public marketplace;
@@ -42,11 +46,13 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
     function initialize(
         address _template721Address,
         address _template1155Address,
+        address _proxy,
         address _marketplace
     ) external initializer {
         admin = msg.sender;
         template721Address = _template721Address;
         template1155Address = _template1155Address;
+        proxy = _proxy;
         marketplace = _marketplace;
         operators[msg.sender] = true;
     }
@@ -65,24 +71,25 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         address _admin,
         address _creator,
         uint _maxSupply
-    ) external returns (address token) {
+    ) external returns (address tokenProxy) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
         bytes32 salt = keccak256(abi.encodePacked(count, name, _creator));
-        token = ClonesUpgradeable.cloneDeterministic(template721Address, salt);
-        userNFTContracts[msg.sender][count] = token;
+        tokenProxy = ClonesUpgradeable.cloneDeterministic(proxy, salt);
+        userNFTContracts[msg.sender][count] = tokenProxy;
         counter = count + 1;
 
-        INFTTemplate(token).initialize(
+        IProxy(tokenProxy).upgradeTo(template721Address);
+        INFTTemplate(tokenProxy).initialize(
             name,
             symbol,
-            _admin,
             _creator,
+            _admin,
             address(this),
             _maxSupply
         );
 
-        emit ERC721Created(token, name, symbol, _maxSupply);
+        emit ERC721Created(tokenProxy, name, symbol, _maxSupply);
     }
 
     /**
@@ -95,25 +102,26 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         string memory uri,
         address _creator,
         address _admin
-    ) external returns (address token1155) {
+    ) external returns (address token1155Proxy) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
         bytes32 salt = keccak256(abi.encodePacked(count, uri, _creator));
-        token1155 = ClonesUpgradeable.cloneDeterministic(
-            template1155Address,
+        token1155Proxy = ClonesUpgradeable.cloneDeterministic(
+            proxy,
             salt
         );
-        userNFTContracts[msg.sender][count] = token1155;
+        userNFTContracts[msg.sender][count] = token1155Proxy;
         counter = count + 1;
 
-        ISFTTemplate(token1155).initialize(
+        IProxy(token1155Proxy).upgradeTo(template1155Address);
+        ISFTTemplate(token1155Proxy).initialize(
             uri,
             _creator,
             _admin,
             address(this)
         );
 
-        emit ERC1155Created(token1155, uri);
+        emit ERC1155Created(token1155Proxy, uri);
     }
 
     /**
