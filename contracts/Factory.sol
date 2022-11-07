@@ -8,6 +8,7 @@ import "./interfaces/ISFTTemplate.sol";
 import "./interfaces/IProxy.sol";
 import "./Relayer/BasicMetaTransaction.sol";
 import "./libraries/VoucherLib.sol";
+import "contracts/OwnedUpgradeabilityProxy.sol";
 
 contract TokenFactory is Initializable, BasicMetaTransaction {
     // Admin of the contract
@@ -75,10 +76,10 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         require(operators[msg.sender], "not operator");
         uint count = counter;
         bytes32 salt = keccak256(abi.encodePacked(count, name, _creator));
-        tokenProxy = ClonesUpgradeable.cloneDeterministic(proxy, salt);
+        tokenProxy = address(new OwnedUpgradeabilityProxy());
         userNFTContracts[msg.sender][count] = tokenProxy;
         counter = count + 1;
-
+        
         IProxy(tokenProxy).upgradeTo(template721Address);
         INFTTemplate(tokenProxy).initialize(
             name,
@@ -106,10 +107,7 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         require(operators[msg.sender], "not operator");
         uint count = counter;
         bytes32 salt = keccak256(abi.encodePacked(count, uri, _creator));
-        token1155Proxy = ClonesUpgradeable.cloneDeterministic(
-            proxy,
-            salt
-        );
+        token1155Proxy = address(new OwnedUpgradeabilityProxy());
         userNFTContracts[msg.sender][count] = token1155Proxy;
         counter = count + 1;
 
