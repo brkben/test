@@ -20,7 +20,6 @@ import BuyerVoucher from "./utilities/BuyerVoucher";
 
 import { expandTo18Decimals, expandTo6Decimals } from "./utilities/utilities";
 import { expect } from "chai";
-// import { console } from "console";
 import template1155Voucher from "./utilities/SFTVoucher";
 import { UsdInterface } from "../typechain/Usd";
 
@@ -92,21 +91,17 @@ describe("Template", async () => {
           signers[1].address,
           3
         );
-        console.log("c1");
       const Tseries = await factory
         .connect(owner)
         .userNFTContracts(owner.address, 0);
-        console.log("c2");
-      console.log(await factory.proxy())
+
       const TRS = await new Template721__factory(owner).attach(Tseries);
-      console.log("trs",TRS.address);
 
       //creating vouchers
       const TemplateVoucher = await new LazyMinting({
         _contract: TRS,
         _signer: signers[1],
       });
-      console.log("c4");
       const voucherNFT = await TemplateVoucher.createVoucher(
         Tseries,
         1,
@@ -116,12 +111,10 @@ describe("Template", async () => {
         signers[2].address,
         expandTo6Decimals(0)
       );
-      console.log("c5");
       const Template1155Voucher = await new template1155Voucher({
         _contract: TRS,
         _signer: signers[1],
       });
-      console.log("c6");
       const voucher = await Template1155Voucher.createVoucher(
         Tseries,
         1,
@@ -133,12 +126,10 @@ describe("Template", async () => {
         signers[2].address,
         expandTo6Decimals(0)
       );
-      console.log("c7");
       const seller = new SellerVoucher({
         _contract: singleMarketplace,
         _signer: signers[1],
       });
-      console.log("c8");
       const sellerVoucher = await seller.createVoucher(
         Tseries,
         signers[1].address,
@@ -149,12 +140,10 @@ describe("Template", async () => {
         true,
         true
       );
-      console.log("c9");
       const buyer = await new BuyerVoucher({
         _contract: singleMarketplace,
         _signer: signers[6],
       });
-      console.log("c10");
       const buyerVoucher = await buyer.createVoucher(
         Tseries,
         signers[6].address,
@@ -164,7 +153,6 @@ describe("Template", async () => {
         1,
         true
       );
-      console.log("c11");
       //Primary Buy
       await usdt
         .connect(owner)
@@ -183,10 +171,7 @@ describe("Template", async () => {
         voucherNFT,
         true
       );
-      console.log("TRS",TRS.address);
-      console.log("balanceOf",await TRS.balanceOf(signers[6].address));
       expect(await TRS.balanceOf(signers[6].address)).to.be.eq(1);
-      console.log("c12");
 ``
       //Secondary buy
       const TemplateVoucherNFT2 = await new LazyMinting({
@@ -253,7 +238,6 @@ describe("Template", async () => {
         voucherNFT2,
         true
       );
-      console.log("name",await TRS.name());
       expect(await TRS.balanceOf(signers[7].address)).to.be.eq(1);
     });
 
@@ -4231,15 +4215,12 @@ describe("Template", async () => {
         expandTo6Decimals(0)
       );
       //Primary Buy
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .transfer(signers[6].address, expandTo6Decimals(1000));
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .approve(singleMarketplace.address, expandTo6Decimals(1000));
-      //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
       await expect(
         singleMarketplace.Buy(
           Voucherbuy,
@@ -4318,15 +4299,12 @@ describe("Template", async () => {
         expandTo6Decimals(0)
       );
       //Primary Buy
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .transfer(signers[6].address, expandTo6Decimals(1000));
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .approve(singleMarketplace.address, expandTo6Decimals(1000));
-      //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
       await expect(
         singleMarketplace.Buy(
           Voucherbuy,
@@ -4405,15 +4383,12 @@ describe("Template", async () => {
         expandTo6Decimals(0)
       );
       //Primary Buy
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .transfer(signers[6].address, expandTo6Decimals(1000));
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .approve(singleMarketplace.address, expandTo6Decimals(1000));
-      //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
       await expect(
         singleMarketplace.Buy(
           Voucherbuy,
@@ -4492,15 +4467,12 @@ describe("Template", async () => {
         expandTo6Decimals(0)
       );
       //Primary Buy
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .transfer(signers[6].address, expandTo6Decimals(1000));
-      //console.log("treasury balance:",await usdt.balanceOf(owner.address))
       await usdt
         .connect(owner)
         .approve(singleMarketplace.address, expandTo6Decimals(1000));
-      //console.log("NFT balance of first buyer before buy:",await TRS.balanceOf(signers[6].address,1));
       await expect(
         singleMarketplace.Buy(
           Voucherbuy,

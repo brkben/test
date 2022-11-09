@@ -19,7 +19,6 @@ const SIGNING_DOMAIN_VERSION = "1"  ;
     const {_contract, _signer} =data; 
     this.contract = _contract 
     this.signer = _signer
-    // console.log(_signer.address,_contract.address,"contract and address");
   }
   
 
