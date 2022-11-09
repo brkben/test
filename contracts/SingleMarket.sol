@@ -8,6 +8,7 @@ import "./Relayer/BasicMetaTransaction.sol";
 import "./interfaces/ISFTTemplate.sol";
 import "./interfaces/INFTTemplate.sol";
 
+
 contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     bytes32 public constant HEFTYVERSE_SELLER_HASH =
         0x51578850e098d13a094707a5ac92c49e129a0105cf9dd73242d806c6226cb33b;
@@ -365,20 +366,26 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         bool is721NFT
     ) internal {
         if (!_voucher.toMint || !_voucherNFT.toMint) {
+            
             setCounter(buyer, seller);
+            
 
             // royalty given
             uint royaltyAmount = sendRoyalty(buyer, seller, is721NFT, true);
+           
 
             //market fee deducted
             uint fee = takeMarketplaceFee(buyer, true);
+           
             //nft transfer
             if (is721NFT) {
                 INFTTemplate(seller.nftAddress).transferFrom(
                     seller.owner,
                     buyer.buyer,
                     seller.tokenID
+                    
                 );
+                
             } else {
                 ISFTTemplate(seller.nftAddress).safeTransferFrom(
                     seller.owner,
@@ -387,6 +394,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                     buyer.amount,
                     ""
                 );
+                
             }
             emit AmountDistributed(
                 buyer.buyer,
@@ -394,34 +402,41 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 royaltyAmount,
                 fee
             );
+            
         } else {
             //verifyPrimary(seller, buyer, _voucher);
 
             //market fee deducted
             uint fee = takeMarketplaceFee(buyer, true);
+            
             // token redeeming
             if (is721NFT) {
-                token.transferFrom(
-                    treasury,
-                    INFTTemplate(seller.nftAddress).creator(),
-                    buyer.pricePaid - fee
-                );
+                // token.transferFrom(
+                //     treasury,
+                //     INFTTemplate(seller.nftAddress).creator(),
+                //     buyer.pricePaid - fee
+                // );
+                
                 INFTTemplate(seller.nftAddress).redeem(
                     _voucherNFT,
                     buyer.buyer
                 );
+               
             } else {
                 token.transferFrom(
                     treasury,
                     ISFTTemplate(seller.nftAddress).creator(),
                     buyer.pricePaid - fee
                 );
+                
                 setCounter(buyer, seller);
+                
                 ISFTTemplate(seller.nftAddress).redeem(
                     _voucher,
                     buyer.buyer,
                     buyer.amount
                 );
+               
             }
 
             emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
@@ -712,11 +727,13 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         uint royaltyAmount;
         if (is721NFT) {
             //not owner
+            
             require(
                 INFTTemplate(seller.nftAddress).ownerOf(seller.tokenID) ==
                     seller.owner,
                 "NO"
             );
+             
             (receiver, royaltyAmount) = INFTTemplate(seller.nftAddress)
                 .royaltyInfo(seller.tokenID, buyer.pricePaid);
         } else {
@@ -728,9 +745,13 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 ) >= buyer.amount,
                 "NO"
             );
+             
+           
             (receiver, royaltyAmount) = ISFTTemplate(seller.nftAddress)
                 .royaltyInfo(seller.tokenID, buyer.pricePaid);
+                
         }
+         
 
         if (fromTreasury) token.transferFrom(treasury, receiver, royaltyAmount);
         else token.transferFrom(buyer.buyer, receiver, royaltyAmount);
