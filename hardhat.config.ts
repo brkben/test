@@ -22,7 +22,7 @@ export default {
     alphaSort: true,
     disambiguatePaths: false,
     runOnCompile: true,
-    strict: false,
+    strict: true,
     only: ['Factory', 'Marketplace721', 'Marketplace1155', 'Template721', 'Template1155', 'SingleMarket', 'SingleMarketPlace2', 'SingleMarketPlace3','Airdrop']
   },
 

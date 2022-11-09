@@ -70,7 +70,7 @@ contract Template1155 is
      */
     function setCreator(address _creator) external {
         require(msg.sender == admin, "NA"); //Not Admin
-        require(_creator != address(0),"ZA");//Zero Address
+        require(_creator != address(0), "ZA"); //Zero Address
         creator = _creator;
     }
 
@@ -80,7 +80,7 @@ contract Template1155 is
      * @param _voucher A signed SFTvoucher that describes the SFT to be redeemed.
      */
     function redeem(
-        Voucher.SFTvoucher calldata _voucher,
+        Voucher.SFTvoucher memory _voucher,
         address redeemer,
         uint amount
     ) external {
@@ -158,7 +158,7 @@ contract Template1155 is
      * @notice Returns a hash of the given SFTvoucher, prepared using EIP712 typed data hashing rules.
      * @param voucher is a SFTvoucher to hash.
      */
-    function _hash(Voucher.SFTvoucher calldata voucher)
+    function _hash(Voucher.SFTvoucher memory voucher)
         internal
         view
         returns (bytes32)
@@ -187,7 +187,7 @@ contract Template1155 is
      * @dev Will revert if the signature is invalid.
      * @param voucher is a SFTvoucher describing the SFT to be bought
      */
-    function _verify(Voucher.SFTvoucher calldata voucher)
+    function _verify(Voucher.SFTvoucher memory voucher)
         internal
         view
         returns (address)

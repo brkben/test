@@ -164,27 +164,20 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     }
 
     /**
-     * @notice Function to set new address for market wallet
-     * @param _wallet is the new wallet address where marketplace fee will be sent
+     * @notice Function to set new address for different wallets
+     * @param _wallet is the new wallet address
+     * @param _isMarketingWallet is the bool value
      */
-    function setMarketingWallet(address _wallet) external {
+    function setWallet(address _wallet, bool _isMarketingWallet) external {
         // not admin
         require(msg.sender == admin, "NA");
         //zero address
         require(_wallet != address(0), "ZA");
-        marketWallet = _wallet;
-    }
-
-    /**
-     * @notice Function to set new address for treasury wallet
-     * @param _wallet is the new wallet address where marketplace fee will be sent
-     */
-    function settreasury(address _wallet) external {
-        // not admin
-        require(msg.sender == admin, "NA");
-        //zero address
-        require(_wallet != address(0), "ZA");
-        treasury = _wallet;
+        if (_isMarketingWallet) {
+            marketWallet = _wallet;
+        } else {
+            treasury = _wallet;
+        }
     }
 
     /**
@@ -697,10 +690,9 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             leftCounter = leftCounter - buyer.amount;
         }
         require(leftCounter >= 0, "ALZ"); //Amount left less than zero
-        
+
         amountLeft[seller.counter] = leftCounter;
         if (leftCounter == 0) usedCounters[seller.counter] = true;
-
     }
 
     /**
