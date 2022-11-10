@@ -65,7 +65,7 @@ contract Template721 is
      * @param redeemer The address of the account which will receive the NFT upon success.
      * @param _voucher A signed NFTvoucher that describes the NFT to be redeemed.
      */
-    function redeem(Voucher.NFTvoucher calldata _voucher, address redeemer)
+    function redeem(Voucher.NFTvoucher memory _voucher, address redeemer)
         external
     {
         require(_voucher.nftAddress == address(this), "IA"); //invalid address
@@ -139,7 +139,7 @@ contract Template721 is
      * @notice Returns a hash of the given NFTvoucher, prepared using EIP712 typed data hashing rules.
      * @param voucher is a NFTvoucher to hash.
      */
-    function _hash(Voucher.NFTvoucher calldata voucher)
+    function _hash(Voucher.NFTvoucher memory voucher)
         internal
         view
         returns (bytes32)
@@ -166,7 +166,7 @@ contract Template721 is
      * @dev Will revert if the signature is invalid.
      * @param voucher is a NFTvoucher describing the NFT to be bought
      */
-    function _verify(Voucher.NFTvoucher calldata voucher)
+    function _verify(Voucher.NFTvoucher memory voucher)
         internal
         view
         returns (address)

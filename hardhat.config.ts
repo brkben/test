@@ -22,7 +22,7 @@ export default {
     alphaSort: true,
     disambiguatePaths: false,
     runOnCompile: true,
-    strict: false,
+    strict: true,
     only: ['Factory', 'Marketplace721', 'Marketplace1155', 'Template721', 'Template1155', 'SingleMarket', 'SingleMarketPlace2', 'SingleMarketPlace3','Airdrop']
   },
 
@@ -33,19 +33,20 @@ export default {
       allowUnlimitedContractSize: true,
 
     },
-    mumbaitest: {
-      url: " https://rpc-mumbai.maticvigil.com/",
-      accounts: [`0x${process.env.PVTKEY}`]
-    },
-    matic: {
-      url: "https://polygon-mainnet.g.alchemy.com/v2/_BdD1r9f0l6NfODQI-BtleaSysMPMF-2",
-      accounts: [`0x${process.env.PVTKEY}`]
-      // gasPrice: 150000000000
-
-    },
+    // mumbaitest: {
+    //   url: " https://rpc-mumbai.maticvigil.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
+    // matic: {
+    //   url: "https://polygon-rpc.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
     // localhost: {
     //   url: "http://127.0.0.1:8545",
     // },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+    },
     // rinkeby: {
     //   url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
     //   accounts: [`0x${process.env.PVTKEY}`],
@@ -59,9 +60,9 @@ export default {
     //   },
     // },
   },
-  etherscan: {
-    apiKey: process.env.API_FOR_MUMBAI,
-  },
+  // etherscan: {
+  //   apiKey: process.env.API_FOR_MUMBAI,
+  // },
   solidity: "0.8.14",
   typechain: {
     outDir: "typechain",
