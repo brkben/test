@@ -365,7 +365,44 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         Voucher.NFTvoucher memory _voucherNFT,
         bool is721NFT
     ) internal {
-        if (!_voucher.toMint || !_voucherNFT.toMint) {
+        if (_voucher.toMint && _voucherNFT.toMint) {
+            //verifyPrimary(seller, buyer, _voucher);
+
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, true);
+            
+            // token redeeming
+            if (is721NFT) {
+                // token.transferFrom(
+                //     treasury,
+                //     INFTTemplate(seller.nftAddress).creator(),
+                //     buyer.pricePaid - fee
+                // );
+                
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+               
+            } else {
+                token.transferFrom(
+                    treasury,
+                    ISFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                
+                setCounter(buyer, seller);
+                
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+               
+            }
+
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        } else {
             
             setCounter(buyer, seller);
             
@@ -403,44 +440,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 fee
             );
             
-        } else {
-            //verifyPrimary(seller, buyer, _voucher);
-
-            //market fee deducted
-            uint fee = takeMarketplaceFee(buyer, true);
-            
-            // token redeeming
-            if (is721NFT) {
-                // token.transferFrom(
-                //     treasury,
-                //     INFTTemplate(seller.nftAddress).creator(),
-                //     buyer.pricePaid - fee
-                // );
-                
-                INFTTemplate(seller.nftAddress).redeem(
-                    _voucherNFT,
-                    buyer.buyer
-                );
-               
-            } else {
-                token.transferFrom(
-                    treasury,
-                    ISFTTemplate(seller.nftAddress).creator(),
-                    buyer.pricePaid - fee
-                );
-                
-                setCounter(buyer, seller);
-                
-                ISFTTemplate(seller.nftAddress).redeem(
-                    _voucher,
-                    buyer.buyer,
-                    buyer.amount
-                );
-               
-            }
-
-            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
-        }
+        }  
+        
     }
 
     /**
@@ -460,7 +461,39 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         Voucher.NFTvoucher memory _voucherNFT,
         bool is721NFT
     ) internal {
-        if (!_voucher.toMint || !_voucherNFT.toMint) {
+        if (_voucher.toMint && _voucherNFT.toMint) 
+        {
+            //verifyPrimary(seller, buyer, _voucher);
+
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, false);
+            // token redeeming
+            if (is721NFT) {
+                token.transferFrom(
+                    buyer.buyer,
+                    INFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                token.transferFrom(
+                    buyer.buyer,
+                    ISFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        } else {
             setCounter(buyer, seller);
 
             // royalty given
@@ -497,38 +530,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 royaltyAmount,
                 fee
             );
-        } else {
-            //verifyPrimary(seller, buyer, _voucher);
-
-            //market fee deducted
-            uint fee = takeMarketplaceFee(buyer, false);
-            // token redeeming
-            if (is721NFT) {
-                token.transferFrom(
-                    buyer.buyer,
-                    INFTTemplate(seller.nftAddress).creator(),
-                    buyer.pricePaid - fee
-                );
-                INFTTemplate(seller.nftAddress).redeem(
-                    _voucherNFT,
-                    buyer.buyer
-                );
-            } else {
-                token.transferFrom(
-                    buyer.buyer,
-                    ISFTTemplate(seller.nftAddress).creator(),
-                    buyer.pricePaid - fee
-                );
-                setCounter(buyer, seller);
-                ISFTTemplate(seller.nftAddress).redeem(
-                    _voucher,
-                    buyer.buyer,
-                    buyer.amount
-                );
-            }
-
-            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
-        }
+        }  
     }
 
     /**
@@ -548,7 +550,26 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         Voucher.NFTvoucher memory _voucherNFT,
         bool is721NFT
     ) internal {
-        if (!_voucher.toMint || !_voucherNFT.toMint) {
+        if (_voucher.toMint && _voucherNFT.toMint) {
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, true);
+            // token redeeming
+            if (is721NFT) {
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        } else {
             setCounter(buyer, seller);
 
             // royalty given
@@ -584,26 +605,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 royaltyAmount,
                 fee
             );
-        } else {
-            //market fee deducted
-            uint fee = takeMarketplaceFee(buyer, true);
-            // token redeeming
-            if (is721NFT) {
-                INFTTemplate(seller.nftAddress).redeem(
-                    _voucherNFT,
-                    buyer.buyer
-                );
-            } else {
-                setCounter(buyer, seller);
-                ISFTTemplate(seller.nftAddress).redeem(
-                    _voucher,
-                    buyer.buyer,
-                    buyer.amount
-                );
-            }
-
-            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
-        }
+        }  
     }
 
     /**
@@ -623,7 +625,32 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         Voucher.NFTvoucher memory _voucherNFT,
         bool is721NFT
     ) internal {
-        if (!_voucher.toMint || !_voucherNFT.toMint) {
+        if (_voucher.toMint && _voucherNFT.toMint) {
+            //market fee deducted
+            uint fee = takeMarketplaceFee(buyer, false);
+            //payment transfer
+            token.transferFrom(
+                buyer.buyer,
+                seller.owner,
+                buyer.pricePaid - fee
+            );
+            // token redeeming
+            if (is721NFT) {
+                INFTTemplate(seller.nftAddress).redeem(
+                    _voucherNFT,
+                    buyer.buyer
+                );
+            } else {
+                setCounter(buyer, seller);
+                ISFTTemplate(seller.nftAddress).redeem(
+                    _voucher,
+                    buyer.buyer,
+                    buyer.amount
+                );
+            }
+
+            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
+        } else {
             setCounter(buyer, seller);
 
             // royalty given
@@ -659,32 +686,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 royaltyAmount,
                 fee
             );
-        } else {
-            //market fee deducted
-            uint fee = takeMarketplaceFee(buyer, false);
-            //payment transfer
-            token.transferFrom(
-                buyer.buyer,
-                seller.owner,
-                buyer.pricePaid - fee
-            );
-            // token redeeming
-            if (is721NFT) {
-                INFTTemplate(seller.nftAddress).redeem(
-                    _voucherNFT,
-                    buyer.buyer
-                );
-            } else {
-                setCounter(buyer, seller);
-                ISFTTemplate(seller.nftAddress).redeem(
-                    _voucher,
-                    buyer.buyer,
-                    buyer.amount
-                );
-            }
-
-            emit AmountDistributed(buyer.buyer, buyer.pricePaid, 0, fee);
-        }
+        }  
     }
 
     /**

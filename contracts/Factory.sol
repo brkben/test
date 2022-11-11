@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./interfaces/INFTTemplate.sol";
 import "./interfaces/ISFTTemplate.sol";
 import "./interfaces/IProxy.sol";
 import "./Relayer/BasicMetaTransaction.sol";
 import "./libraries/VoucherLib.sol";
-import "contracts/OwnedUpgradeabilityProxy.sol";
+import "./OwnedUpgradeabilityProxy.sol";
 
 contract TokenFactory is Initializable, BasicMetaTransaction {
     // Admin of the contract
@@ -75,7 +74,6 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
     ) external returns (address tokenProxy) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
-        bytes32 salt = keccak256(abi.encodePacked(count, name, _creator));
         tokenProxy = address(new OwnedUpgradeabilityProxy());
         userNFTContracts[msg.sender][count] = tokenProxy;
         counter = count + 1;
@@ -106,7 +104,6 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
     ) external returns (address token1155Proxy) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
-        bytes32 salt = keccak256(abi.encodePacked(count, uri, _creator));
         token1155Proxy = address(new OwnedUpgradeabilityProxy());
         userNFTContracts[msg.sender][count] = token1155Proxy;
         counter = count + 1;
@@ -120,24 +117,6 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         );
 
         emit ERC1155Created(token1155Proxy, uri);
-    }
-
-    /**
-     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}
-     */
-    function predictNFTContractAddress(
-        string memory name,
-        address implementation,
-        address creator,
-        uint256 index
-    ) external view returns (address predicted) {
-        bytes32 salt = keccak256(abi.encodePacked(index, name, creator));
-        return
-            ClonesUpgradeable.predictDeterministicAddress(
-                implementation,
-                salt,
-                address(this)
-            );
     }
 
     /**
