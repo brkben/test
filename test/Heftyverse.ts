@@ -2804,7 +2804,7 @@ describe("Template", async () => {
     });
 
     it("updating market wallet address", async () => {
-      await singleMarketplace.setMarketingWallet(signers[4].address);
+      await singleMarketplace.setWallet(signers[4].address,true);
       expect(await singleMarketplace.marketWallet()).to.be.eq(
         signers[4].address
       );
@@ -2812,26 +2812,26 @@ describe("Template", async () => {
       await expect(
         singleMarketplace
           .connect(signers[5])
-          .setMarketingWallet(signers[4].address)
+          .setWallet(signers[4].address,true)
       ).to.be.revertedWith("NA");
       await expect(
         singleMarketplace
           .connect(owner)
-          .setMarketingWallet(ethers.constants.AddressZero)
+          .setWallet(ethers.constants.AddressZero,true)
       ).to.be.revertedWith("ZA");
     });
 
     it("Updating treasury wallet address", async () => {
-      await singleMarketplace.settreasury(signers[4].address);
+      await singleMarketplace.setWallet(signers[4].address,false);
       expect(await singleMarketplace.treasury()).to.be.eq(signers[4].address);
 
       await expect(
-        singleMarketplace.connect(signers[5]).settreasury(signers[4].address)
+        singleMarketplace.connect(signers[5]).setWallet(signers[4].address,false)
       ).to.be.revertedWith("NA");
       await expect(
         singleMarketplace
           .connect(owner)
-          .settreasury(ethers.constants.AddressZero)
+          .setWallet(ethers.constants.AddressZero,false)
       ).to.be.revertedWith("ZA");
     });
 
@@ -6680,14 +6680,14 @@ describe("Template", async () => {
       });
 
       it("updating market wallet address", async () => {
-        await singleMarketplace.setMarketingWallet(signers[4].address);
+        await singleMarketplace.setWallet(signers[4].address,true);
         expect(await singleMarketplace.marketWallet()).to.be.eq(
           signers[4].address
         );
       });
 
       it("Updating treasury wallet address", async () => {
-        await singleMarketplace.settreasury(signers[4].address);
+        await singleMarketplace.setWallet(signers[4].address, false);
         expect(await singleMarketplace.treasury()).to.be.eq(signers[4].address);
       });
 
