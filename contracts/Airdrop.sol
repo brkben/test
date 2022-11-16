@@ -14,9 +14,6 @@ contract Airdrop is
     EIP712Upgradeable,
     BasicMetaTransaction
 {
-    bytes32 public constant SFT_VOUCHER_HASH =
-        0xfff075b1c892595cd22c001e3cc055f20114946aa21ad68c4930d4ffcf2a25ed;
-
     // Admin of the contract
     address public admin;
 
@@ -25,12 +22,6 @@ contract Airdrop is
 
     // Factory contract address
     address public factory;
-
-    // Mapping of the counters that has been redeemed
-    mapping(uint256 => bool) public redeemedCounter;
-
-    // Mapping of the counter to the amount left in voucher
-    mapping(uint256 => uint256) public amountLeft;
 
     /**
      * @notice Initializes the contract by setting a `admin`, `creator`, `factory` and `token` for the contract
@@ -56,6 +47,32 @@ contract Airdrop is
     }
 
     /**
+     * @notice This is an internal function modified to mint the NFT and set the token URI and royalty info
+     * @param to is the address to which NFT will be minted
+     * @param tokenId is the ID of the NFT to be minted
+     * @param mintAmount is the amount of tokens to be minted of the same tokenID
+     * @param tokenURI is the URI of the token
+     * @param royaltyKeeper is the address to which the royalty will be sent
+     * @param royaltyFees is the royalty percentage in bps
+     */
+    function MintNFT(
+        address to,
+        uint256 tokenId,
+        uint256 mintAmount,
+        string calldata tokenURI,
+        address royaltyKeeper,
+        uint96 royaltyFees
+    ) external {
+        // not admin
+        require(_msgSender() == admin, "NA"); 
+        _mint(to, tokenId, mintAmount, "");
+        _setURI(tokenId, tokenURI);
+        if (royaltyKeeper != address(0)) {
+            _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
+        }
+    }
+
+    /**
      * @notice Function to change the admin of the contract
      * @param _admin is the new admin address
      */
@@ -73,69 +90,6 @@ contract Airdrop is
         require(_msgSender() == admin, "NA");
         require(_creator != address(0));
         creator = _creator;
-    }
-
-    function bulkMint(
-        address to,
-        uint256[] memory tokenId,
-        uint256[] memory mintAmount,
-        string[] memory tokenURI,
-        address[] memory royaltyKeeper,
-        uint96[] memory royaltyFees
-    ) external {
-        require(_msgSender() == admin,"NA");
-        require(tokenId.length == mintAmount.length &&
-                tokenURI.length == royaltyKeeper.length && 
-                royaltyFees.length == tokenId.length && 
-                mintAmount.length == tokenURI.length, "ERR");
-        for(uint i = 0; i< tokenId.length; i++) {
-            MintNFT(to, tokenId[i], mintAmount[i], tokenURI[i], royaltyKeeper[i], royaltyFees[i]);
-        }
-    }
-
-    /**
-     * @notice Redeems an SFTvoucher for an actual SFT, creating it in the process.
-     * @param redeemer The address of the account which will receive the SFT upon success.
-     * @param _voucher A signed SFTvoucher that describes the SFT to be redeemed.
-     */
-    function redeem(
-        Voucher.SFTvoucher calldata _voucher,
-        address redeemer,
-        uint amount
-    ) external {
-        require(!redeemedCounter[_voucher.counter]);
-        require(_voucher.nftAddress == address(this));
-
-        address signer = _verify(_voucher);
-        require(signer == admin || signer == creator);
-
-        uint left = amountLeft[_voucher.counter];
-        // Handling counter and amount
-        if (left == 0) {
-            left = _voucher.amount - amount;
-        } else {
-            left = left - amount;
-        }
-
-        if (left == 0) redeemedCounter[_voucher.counter] = true;
-
-        amountLeft[_voucher.counter] = left;
-
-        MintNFT(
-            signer,
-            _voucher.tokenId,
-            amount,
-            _voucher.tokenUri,
-            _voucher.royaltyKeeper,
-            _voucher.royaltyFees
-        );
-        safeTransferFrom(
-            signer,
-            redeemer,
-            _voucher.tokenId,
-            amount,
-            ""
-        );
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -198,48 +152,6 @@ contract Airdrop is
         }
     }
 
-    /**
-     * @notice Returns a hash of the given SFTvoucher, prepared using EIP712 typed data hashing rules.
-     * @param voucher is a SFTvoucher to hash.
-     */
-    function _hash(Voucher.SFTvoucher calldata voucher)
-        internal
-        view
-        returns (bytes32)
-    {
-        return
-            _hashTypedDataV4(
-                keccak256(
-                    abi.encode(
-                        SFT_VOUCHER_HASH,
-                        voucher.nftAddress,
-                        voucher.tokenId,
-                        voucher.price,
-                        voucher.amount,
-                        voucher.counter,
-                        keccak256(bytes(voucher.tokenUri)),
-                        voucher.toMint,
-                        voucher.royaltyKeeper,
-                        voucher.royaltyFees
-                    )
-                )
-            );
-    }
-
-    /**
-     * @notice Verifies the signature for a given SFTvoucher, returning the address of the signer.
-     * @dev Will revert if the signature is invalid.
-     * @param voucher is a SFTvoucher describing the SFT to be bought
-     */
-    function _verify(Voucher.SFTvoucher calldata voucher)
-        internal
-        view
-        returns (address)
-    {
-        bytes32 digest = _hash(voucher);
-        return ECDSAUpgradeable.recover(digest, voucher.signature);
-    }
-
     function _msgSender()
         internal
         view
@@ -247,29 +159,5 @@ contract Airdrop is
         returns (address sender)
     {
         return super._msgSender();
-    }
-
-    /**
-     * @notice This is an internal function modified to mint the NFT and set the token URI and royalty info
-     * @param to is the address to which NFT will be minted
-     * @param tokenId is the ID of the NFT to be minted
-     * @param mintAmount is the amount of tokens to be minted of the same tokenID
-     * @param tokenURI is the URI of the token
-     * @param royaltyKeeper is the address to which the royalty will be sent
-     * @param royaltyFees is the royalty percentage in bps
-     */
-    function MintNFT(
-        address to,
-        uint256 tokenId,
-        uint256 mintAmount,
-        string memory tokenURI,
-        address royaltyKeeper,
-        uint96 royaltyFees
-    ) internal {
-        _mint(to, tokenId, mintAmount, "");
-        _setURI(tokenId, tokenURI);
-        if (royaltyKeeper != address(0)) {
-            _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
-        }
     }
 }
