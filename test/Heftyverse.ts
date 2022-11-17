@@ -2903,7 +2903,7 @@ describe("Template", async () => {
       await usdt
         .connect(owner)
         .transfer(singleMarketplace.address, expandTo6Decimals(1000));
-      await singleMarketplace.connect(owner).withdrawStuckToken(usdt.address);
+      await singleMarketplace.connect(owner).withdrawStuckToken(usdt.address, false);
       expect(await usdt.balanceOf(owner.address)).to.be.eq(balancebefore);
     });
   });

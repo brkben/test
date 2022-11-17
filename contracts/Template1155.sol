@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity =0.8.14;
 
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
@@ -32,6 +33,9 @@ contract Template1155 is
     // Mapping of the counter to the amount left in voucher
     mapping(uint256 => uint256) public amountLeft;
 
+    // Event for token withdraw
+    event TokenWithdrawn(uint256 _amount);
+
     /**
      * @notice Initializes the contract by setting a `admin`, `creator`, `factory` and `token` for the contract
      * @param uri is set as the uri of the deployed ERC1155
@@ -52,6 +56,25 @@ contract Template1155 is
         admin = _admin;
         creator = _creator;
         factory = _factory;
+    }
+
+    /**
+     * @notice Function to withdraw stuck tokens from the contract
+     * @param _token is the token to be withdrawn
+     * @param  isMatic is to check if matic needed to withdrawn
+     */
+    function withdrawStuckToken(address _token, bool isMatic) external {
+        uint256 _amount;
+        if(isMatic) {
+            _amount = address(this).balance;
+            (bool success,) = admin.call{value : _amount}("");
+            // not successfull
+            require(success,"NS");
+        } else {
+            _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+            IERC20Upgradeable(_token).transfer(admin, _amount);
+        }
+        emit TokenWithdrawn(_amount);
     }
 
     /**

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.14;
 
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./interfaces/INFTTemplate.sol";
 import "./interfaces/ISFTTemplate.sol";
@@ -36,6 +37,7 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
 
     event ERC721Created(address indexed token, string name, string symbol, uint maxSupply);
     event ERC1155Created(address indexed token, string uri);
+    event TokenWithdrawn(uint256 _amount);
 
     /**
      * @dev Initializes the contract by setting a `template721Address`, `template1155Address` and `marketplace` for the contract
@@ -168,5 +170,24 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         require(msg.sender == admin, "not admin");
         require(_account != address(0), "Zero address sent");
         operators[_account] = _status;
+    }
+
+        /**
+     * @notice Function to withdraw stuck tokens from the contract
+     * @param _token is the token to be withdrawn
+     * @param  isMatic is to check if matic needed to withdrawn
+     */
+    function withdrawStuckToken(address _token, bool isMatic) external {
+        uint256 _amount;
+        if(isMatic) {
+            _amount = address(this).balance;
+            (bool success,) = admin.call{value : _amount}("");
+            // not successfull
+            require(success,"NS");
+        } else {
+            _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+            IERC20Upgradeable(_token).transfer(admin, _amount);
+        }
+        emit TokenWithdrawn(_amount);
     }
 }

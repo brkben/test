@@ -51,7 +51,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     address public treasury;
 
     // Marketplace fee in bps
-    uint public marketFee = 200;
+    uint public marketFee;
 
     // Mapping for used counter numbers
     mapping(uint256 => bool) public usedCounters;
@@ -86,6 +86,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         marketWallet = _marketWallet;
         treasury = _treasury;
         token = IERC20Upgradeable(_token);
+        marketFee = 200;
     }
 
     /**
@@ -108,7 +109,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         require(seller.minPrice <= buyer.pricePaid, "PI");
         verifyVoucherCreators(buyer, seller, _voucher, _voucherNFT, is721NFT);
 
-        if (buyer.isCustodial == true && seller.isCustodial == true)
+        if (buyer.isCustodial && seller.isCustodial)
             BuyCustodial2Custodial(
                 buyer,
                 seller,
@@ -116,7 +117,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 _voucherNFT,
                 is721NFT
             );
-        else if (buyer.isCustodial == true && seller.isCustodial == false)
+        else if (buyer.isCustodial && !seller.isCustodial)
             BuyNonCustodial2Custodial(
                 buyer,
                 seller,
@@ -124,7 +125,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                 _voucherNFT,
                 is721NFT
             );
-        else if (buyer.isCustodial == false && seller.isCustodial == true)
+        else if (!buyer.isCustodial && seller.isCustodial)
             BuyCustodial2NonCustodial(
                 buyer,
                 seller,
@@ -196,10 +197,19 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     /**
      * @notice Function to withdraw stuck tokens from the contract
      * @param _token is the token to be withdrawn
+     * @param  isMatic is to check if matic needed to withdrawn
      */
-    function withdrawStuckToken(address _token) external {
-        uint256 _amount = IERC20Upgradeable(_token).balanceOf(address(this));
-        IERC20Upgradeable(_token).transfer(admin, _amount);
+    function withdrawStuckToken(address _token, bool isMatic) external {
+        uint256 _amount;
+        if(isMatic) {
+            _amount = address(this).balance;
+            (bool success,) = admin.call{value : _amount}("");
+            // not successfull
+            require(success,"NS");
+        } else {
+            _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+            IERC20Upgradeable(_token).transfer(admin, _amount);
+        }
         emit TokenWithdrawn(_amount);
     }
 
