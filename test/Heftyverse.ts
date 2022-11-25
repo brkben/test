@@ -22,6 +22,7 @@ import { expandTo18Decimals, expandTo6Decimals } from "./utilities/utilities";
 import { expect } from "chai";
 import template1155Voucher from "./utilities/SFTVoucher";
 import { UsdInterface } from "../typechain/Usd";
+import { sign } from "crypto";
 
 describe("Template", async () => {
   let NFT: Template721;
@@ -74,7 +75,7 @@ describe("Template", async () => {
       .initialize(
         NFT.address,
         template1155.address,
-        proxy.address,
+        // proxy.address,
         singleMarketplace.address
       );
 
@@ -151,6 +152,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        signers[6].getTransactionCount,
         true
       );
       //Primary Buy
@@ -227,6 +229,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        signers[7].getTransactionCount,
         true
       );
 

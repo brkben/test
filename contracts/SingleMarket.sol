@@ -13,7 +13,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     bytes32 public constant HEFTYVERSE_SELLER_HASH =
         0x51578850e098d13a094707a5ac92c49e129a0105cf9dd73242d806c6226cb33b;
     bytes32 public constant HEFTYVERSE_BUYER_HASH =
-        0xa5d11765150653576a9e54747c7f8320f9efd3015db18555ba41dcc88980b8f7;
+        0x8049db73fc72f2bebf2148cf5b687477a3c8cef82b84b712b1747ad896bf14c9;
 
     struct HeftyVerseSeller {
         address nftAddress; // Address of the NFT contract
@@ -34,6 +34,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         uint256 amount; // Amount of the NFT to be bought
         uint256 pricePaid; // Price paid for the NFT
         uint256 counter; // Unique counter of the HeftyVerseSeller
+        uint256 nonce; // Transactional nonce of the buyer
         bool isCustodial; // Bool to check if the wallet is custodial or non-custodail
         bytes signature; // Signature created after signing HeftyVerseBuyer
     }
@@ -58,6 +59,9 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
 
     // Mapping of the counter to the amount left in voucher
     mapping(uint256 => uint256) public amountLeft;
+
+    // Mapping for storing last nonce
+    mapping(address => uint256) public lastNonce;
 
     event AmountDistributed(
         address indexed buyer,
@@ -108,6 +112,9 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         //Prices invalid
         require(seller.minPrice <= buyer.pricePaid, "PI");
         verifyVoucherCreators(buyer, seller, _voucher, _voucherNFT, is721NFT);
+        // Wrong nonce
+        require(lastNonce[buyer.buyer] < buyer.nonce,"WN");
+        lastNonce[buyer.buyer] = buyer.nonce;
 
         if (buyer.isCustodial && seller.isCustodial)
             BuyCustodial2Custodial(
@@ -324,6 +331,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         require(seller.owner == _verifySeller(seller), "ISA");
         // invalid Buyer
         require(buyer.buyer == _verifyBuyer(buyer), "IB");
+
         if (is721Nft) {
             // Address Invalid
             require(
