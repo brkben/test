@@ -391,11 +391,11 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
             
             // token redeeming
             if (is721NFT) {
-                // token.transferFrom(
-                //     treasury,
-                //     INFTTemplate(seller.nftAddress).creator(),
-                //     buyer.pricePaid - fee
-                // );
+                token.transferFrom(
+                    treasury,
+                    INFTTemplate(seller.nftAddress).creator(),
+                    buyer.pricePaid - fee
+                );
                 
                 INFTTemplate(seller.nftAddress).redeem(
                     _voucherNFT,
