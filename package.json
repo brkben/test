@@ -38,6 +38,7 @@
     "hardhat-gas-reporter": "^1.0.4",
     "solidity-coverage": "^0.7.21",
     "ts-node-dev": "^2.0.0",
+    "web3": "^1.8.1",
     "yesno": "^0.3.1"
   }
 }

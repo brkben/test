@@ -72,6 +72,7 @@ class BuyerVoucher {
     amount: any,
     pricePaid: any,
     counter: any,
+    nonce:any,
     isCustodial: any
   ) {
     const voucher = {
@@ -81,6 +82,7 @@ class BuyerVoucher {
       amount,
       pricePaid,
       counter,
+      nonce,
       isCustodial,
     };
     const domain = await this._signingDomain();

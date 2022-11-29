@@ -1,5 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
+import { ethers, hardhatArguments, network } from "hardhat";
+// import { ethers } from "@nomiclabs/hardhat-ethers";
+import Web3 from "web3";
 import {
   Template721,
   Template721__factory,
@@ -23,6 +25,10 @@ import { expect } from "chai";
 import template1155Voucher from "./utilities/SFTVoucher";
 import { UsdInterface } from "../typechain/Usd";
 import { sign } from "crypto";
+import hardhatConfig from "../hardhat.config";
+import { messagePrefix } from "@ethersproject/hash";
+import { Provider } from "@ethersproject/abstract-provider";
+// import { providers } from "web3";
 
 describe("Template", async () => {
   let NFT: Template721;
@@ -34,7 +40,11 @@ describe("Template", async () => {
   let template1155: Template1155;
   let singleMarketplace: SingleMarket;
   let proxy: OwnedUpgradeabilityProxy;
+  // var web3 = new Web3(Web3.givenProvider || "ws://localhost:8545" )
+  const hre = require("hardhat");
 
+  var web3Object = new Web3(hre.network.provider);
+ 
   beforeEach(async () => {
     signers = await ethers.getSigners();
     owner = signers[0];
@@ -72,12 +82,7 @@ describe("Template", async () => {
     );
     await factory
       .connect(owner)
-      .initialize(
-        NFT.address,
-        template1155.address,
-        // proxy.address,
-        singleMarketplace.address
-      );
+      .initialize(NFT.address,template1155.address,singleMarketplace.address);
 
     await usdt.mint(signers[1].address, expandTo6Decimals(100));
   });
@@ -103,6 +108,7 @@ describe("Template", async () => {
         _contract: TRS,
         _signer: signers[1],
       });
+
       const voucherNFT = await TemplateVoucher.createVoucher(
         Tseries,
         1,
@@ -141,6 +147,8 @@ describe("Template", async () => {
         true,
         true
       );
+    
+    
       const buyer = await new BuyerVoucher({
         _contract: singleMarketplace,
         _signer: signers[6],
@@ -152,7 +160,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
-        signers[6].getTransactionCount,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -173,8 +181,10 @@ describe("Template", async () => {
         voucherNFT,
         true
       );
+      let nonce = await web3Object.eth.getTransactionCount(signers[6].address);
+     
       expect(await TRS.balanceOf(signers[6].address)).to.be.eq(1);
-``
+
       //Secondary buy
       const TemplateVoucherNFT2 = await new LazyMinting({
         _contract: TRS,
@@ -218,10 +228,14 @@ describe("Template", async () => {
         true,
         true
       );
+
+      
       const buyer2 = await new BuyerVoucher({
         _contract: singleMarketplace,
         _signer: signers[7],
       });
+      
+
       const buyerVoucher2 = await buyer2.createVoucher(
         Tseries,
         signers[7].address,
@@ -229,7 +243,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
-        signers[7].getTransactionCount,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -313,6 +327,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -390,6 +405,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -480,6 +496,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -557,6 +574,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -646,6 +664,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -723,6 +742,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -810,6 +830,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -902,6 +923,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -995,6 +1017,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -1088,6 +1111,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -1182,6 +1206,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -1273,6 +1298,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -1350,6 +1376,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -1434,6 +1461,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -1510,6 +1538,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         true
       );
 
@@ -1599,6 +1628,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -1690,6 +1720,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -1767,6 +1798,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -1852,6 +1884,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -1929,6 +1962,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         false
       );
 
@@ -2018,6 +2052,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -2110,6 +2145,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -2188,6 +2224,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -2275,6 +2312,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -2353,6 +2391,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         true
       );
 
@@ -2442,6 +2481,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -2535,6 +2575,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -2613,6 +2654,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -2699,6 +2741,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -2777,6 +2820,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         false
       );
 
@@ -3406,6 +3450,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3483,6 +3528,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -3572,6 +3618,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3649,6 +3696,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -3734,6 +3782,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3817,6 +3866,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3901,6 +3951,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3972,6 +4023,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -4058,6 +4110,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -4129,6 +4182,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[3].address),
         true
       );
       await usdt
@@ -4202,6 +4256,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4286,6 +4341,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4370,6 +4426,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4454,6 +4511,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4551,6 +4609,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4622,6 +4681,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -4709,6 +4769,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4792,6 +4853,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4876,6 +4938,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(3),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4960,6 +5023,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -5031,6 +5095,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -5118,6 +5183,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -5189,6 +5255,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[3].address),
         false
       );
       await usdt
@@ -5276,6 +5343,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5348,6 +5416,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -5434,6 +5503,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5518,6 +5588,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5603,6 +5674,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5688,6 +5760,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5760,6 +5833,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -5847,6 +5921,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5919,6 +5994,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[2].address),
         true
       );
       await usdt
@@ -6005,6 +6081,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6077,6 +6154,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -6169,6 +6247,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6255,6 +6334,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6339,6 +6419,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6423,6 +6504,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6495,6 +6577,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -6581,6 +6664,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6653,6 +6737,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[3].address),
         false
       );
       await usdt

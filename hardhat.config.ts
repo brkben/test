@@ -4,6 +4,7 @@ import "hardhat-typechain";
 import "hardhat-gas-reporter";
 import "@nomiclabs/hardhat-etherscan";
 import dotenv from "dotenv";
+import "@nomiclabs/hardhat-web3";
 require('hardhat-contract-sizer');
 require('solidity-coverage');
 

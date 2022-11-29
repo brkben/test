@@ -61,7 +61,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     mapping(uint256 => uint256) public amountLeft;
 
     // Mapping for storing last nonce
-    mapping(address => uint256) public lastNonce;
+    mapping(bytes => bool) public lastTransaction;
 
     event AmountDistributed(
         address indexed buyer,
@@ -113,8 +113,8 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         require(seller.minPrice <= buyer.pricePaid, "PI");
         verifyVoucherCreators(buyer, seller, _voucher, _voucherNFT, is721NFT);
         // Wrong nonce
-        require(lastNonce[buyer.buyer] < buyer.nonce,"WN");
-        lastNonce[buyer.buyer] = buyer.nonce;
+        require(!lastTransaction[buyer.signature],"WN");
+        lastTransaction[buyer.signature] = true;
 
         if (buyer.isCustodial && seller.isCustodial)
             BuyCustodial2Custodial(
@@ -292,6 +292,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                         buyer.amount,
                         buyer.pricePaid,
                         buyer.counter,
+                        buyer.nonce,
                         buyer.isCustodial
                     )
                 )
