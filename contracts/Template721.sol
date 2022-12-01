@@ -223,10 +223,11 @@ contract Template721 is
         address royaltyKeeper,
         uint96 royaltyFees
     ) internal {
-        require(totalSupply <= maxSupply, "Template721: max limit exceed");
+        require(totalSupply < maxSupply, "Template721: max limit exceed");
         _safeMint(to, tokenId, "");
         _setTokenURI(tokenId, tokenURI);
         totalSupply++;
+
         if (royaltyKeeper != address(0)) {
             _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
         }

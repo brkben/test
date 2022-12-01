@@ -52,16 +52,16 @@ export default {
     //   url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
     //   accounts: [`0x${process.env.PVTKEY}`],
     // },
-    testnet: {
-      url: "https://data-seed-prebsc-2-s2.binance.org:8545",
-      chainId: 97,
-      // gasPrice: 20000000000,
-      accounts: [`0x${process.env.PVTKEY}`]
-    },
+    // testnet: {
+    //   url: "https://data-seed-prebsc-2-s2.binance.org:8545",
+    //   chainId: 97,
+    //   // gasPrice: 20000000000,
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
   },
-  etherscan: {
-    apiKey: process.env.API_FOR_MUMBAI,
-  },
+  // etherscan: {
+  //   apiKey: process.env.API_FOR_MUMBAI,
+  // },
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",

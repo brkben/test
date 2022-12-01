@@ -8,7 +8,6 @@ import "./Relayer/BasicMetaTransaction.sol";
 import "./interfaces/ISFTTemplate.sol";
 import "./interfaces/INFTTemplate.sol";
 
-
 contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
     bytes32 public constant HEFTYVERSE_SELLER_HASH =
         0x51578850e098d13a094707a5ac92c49e129a0105cf9dd73242d806c6226cb33b;
@@ -332,7 +331,6 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         require(seller.owner == _verifySeller(seller), "ISA");
         // invalid Buyer
         require(buyer.buyer == _verifyBuyer(buyer), "IB");
-
         if (is721Nft) {
             // Address Invalid
             require(
@@ -504,6 +502,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
                     buyer.pricePaid - fee
                 );
                 setCounter(buyer, seller);
+
                 ISFTTemplate(seller.nftAddress).redeem(
                     _voucher,
                     buyer.buyer,
@@ -725,8 +724,6 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         } else {
             leftCounter = leftCounter - buyer.amount;
         }
-        require(leftCounter >= 0, "ALZ"); //Amount left less than zero
-
         amountLeft[seller.counter] = leftCounter;
         if (leftCounter == 0) usedCounters[seller.counter] = true;
     }
@@ -748,7 +745,6 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
         uint royaltyAmount;
         if (is721NFT) {
             //not owner
-            
             require(
                 INFTTemplate(seller.nftAddress).ownerOf(seller.tokenID) ==
                     seller.owner,
@@ -770,7 +766,6 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
            
             (receiver, royaltyAmount) = ISFTTemplate(seller.nftAddress)
                 .royaltyInfo(seller.tokenID, buyer.pricePaid);
-                
         }
          
 
