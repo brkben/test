@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.14;
 
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./interfaces/INFTTemplate.sol";
@@ -30,8 +31,14 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
     // Mapping of the operator which have specific accesses
     mapping(address => bool) public operators;
 
-    event ERC721Created(address indexed token, string name, string symbol);
-    event ERC1155Created(address indexed token, string uri);
+    event ERC721Created(
+        address indexed token,
+        string _name,
+        string _symbol,
+        uint _maxSupply
+    );
+    event ERC1155Created(address indexed token, string _uri);
+    event TokenWithdrawn(uint256 _amount);
 
     /**
      * @dev Initializes the contract by setting a `template721Address`, `template1155Address` and `marketplace` for the contract
@@ -53,51 +60,54 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
 
     /**
      * @notice deploys a clone of the ERC721 template contracts using the openzeppelin clones contract
-     * @param name is set as the name of the deployed ERC721
-     * @param symbol is set as the symbol of the deployed ERC721
+     * @param _name is set as the name of the deployed ERC721
+     * @param _symbol is set as the symbol of the deployed ERC721
      * @param _admin is set as the admin of the deployed ERC721 which will be the creator itself
-     * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
+     * @param _creator is set as the admin of the deployed ERC721 which will be the creator itself
+     * @param _maxSupply is set as the maximum supply of the ERC721
      */
     function create721Token(
-        string memory name,
-        string memory symbol,
+        string memory _name,
+        string memory _symbol,
         address _admin,
         address _creator,
         uint _maxSupply
-    ) external returns (address token) {
+    ) external returns (address token721) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
-        bytes32 salt = keccak256(abi.encodePacked(count, name, _creator));
-        token = ClonesUpgradeable.cloneDeterministic(template721Address, salt);
-        userNFTContracts[msg.sender][count] = token;
+        bytes32 salt = keccak256(abi.encodePacked(count, _name, _creator));
+        token721 = ClonesUpgradeable.cloneDeterministic(
+            template721Address,
+            salt
+        );
+        userNFTContracts[msg.sender][count] = token721;
         counter = count + 1;
-
-        INFTTemplate(token).initialize(
-            name,
-            symbol,
-            _admin,
+        INFTTemplate(token721).initialize(
+            _name,
+            _symbol,
             _creator,
+            _admin,
             address(this),
             _maxSupply
         );
 
-        emit ERC721Created(token, name, symbol);
+        emit ERC721Created(token721, _name, _symbol, _maxSupply);
     }
 
     /**
      * @notice deploys a clone of the ERC1155 template contracts using the openzeppelin clones contract
-     * @param uri is set as the uri of the deployed ERC1155
+     * @param _uri is set as the uri of the deployed ERC1155
      * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
      * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
      */
     function create1155Token(
-        string memory uri,
+        string memory _uri,
         address _creator,
         address _admin
     ) external returns (address token1155) {
         require(operators[msg.sender], "not operator");
         uint count = counter;
-        bytes32 salt = keccak256(abi.encodePacked(count, uri, _creator));
+        bytes32 salt = keccak256(abi.encodePacked(count, _uri, _creator));
         token1155 = ClonesUpgradeable.cloneDeterministic(
             template1155Address,
             salt
@@ -106,13 +116,13 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         counter = count + 1;
 
         ISFTTemplate(token1155).initialize(
-            uri,
+            _uri,
             _creator,
             _admin,
             address(this)
         );
 
-        emit ERC1155Created(token1155, uri);
+        emit ERC1155Created(token1155, _uri);
     }
 
     /**
@@ -182,5 +192,24 @@ contract TokenFactory is Initializable, BasicMetaTransaction {
         require(msg.sender == admin, "not admin");
         require(_account != address(0), "Zero address sent");
         operators[_account] = _status;
+    }
+
+    /**
+     * @notice Function to withdraw stuck tokens from the contract
+     * @param _token is the token to be withdrawn
+     * @param  isMatic is to check if matic needed to withdrawn
+     */
+    function withdrawStuckToken(address _token, bool isMatic) external {
+        uint256 _amount;
+        if (isMatic) {
+            _amount = address(this).balance;
+            (bool success, ) = admin.call{value: _amount}("");
+            // not successfull
+            require(success, "NS");
+        } else {
+            _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+            IERC20Upgradeable(_token).transfer(admin, _amount);
+        }
+        emit TokenWithdrawn(_amount);
     }
 }

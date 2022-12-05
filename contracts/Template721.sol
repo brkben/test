@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity =0.8.14;
 
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/common/ERC2981Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol";
@@ -32,6 +33,10 @@ contract Template721 is
     // Total Supply
     uint public totalSupply;
 
+    // Event for token withdraw
+    event TokenWithdrawn(uint256 _amount);
+
+
     /**
      * @notice Initializes the contract by setting a `admin`, `creator`and `factory` for the contract
      * @param _name is set as the name of the deployed ERC721
@@ -39,6 +44,7 @@ contract Template721 is
      * @param _creator is set as the admin of the deployed ERC1155 which will be the creator itself
      * @param _admin is set as the second admin of the deployed ERC1155 which will be the platform owner
      * @param _factory is set as the factory address
+     * @param _maxSupply is set as the maximum supply
      */
     function initialize(
         string memory _name,
@@ -64,7 +70,7 @@ contract Template721 is
      * @param redeemer The address of the account which will receive the NFT upon success.
      * @param _voucher A signed NFTvoucher that describes the NFT to be redeemed.
      */
-    function redeem(Voucher.NFTvoucher calldata _voucher, address redeemer)
+    function redeem(Voucher.NFTvoucher memory _voucher, address redeemer)
         external
     {
         require(_voucher.nftAddress == address(this), "IA"); //invalid address
@@ -74,10 +80,29 @@ contract Template721 is
             signer,
             _voucher.tokenId,
             _voucher.tokenUri,
-            address(_voucher.royaltyKeeper),
+            _voucher.royaltyKeeper,
             _voucher.royaltyFees
         );
         transferFrom(signer, redeemer, _voucher.tokenId);
+    }
+
+    /**
+     * @notice Function to withdraw stuck tokens from the contract
+     * @param _token is the token to be withdrawn
+     * @param  isMatic is to check if matic needed to withdrawn
+     */
+    function withdrawStuckToken(address _token, bool isMatic) external {
+        uint256 _amount;
+        if(isMatic) {
+            _amount = address(this).balance;
+            (bool success,) = admin.call{value : _amount}("");
+            // not successfull
+            require(success,"NS");
+        } else {
+            _amount = IERC20Upgradeable(_token).balanceOf(address(this));
+            IERC20Upgradeable(_token).transfer(admin, _amount);
+        }
+        emit TokenWithdrawn(_amount);
     }
 
     /**
@@ -138,7 +163,7 @@ contract Template721 is
      * @notice Returns a hash of the given NFTvoucher, prepared using EIP712 typed data hashing rules.
      * @param voucher is a NFTvoucher to hash.
      */
-    function _hash(Voucher.NFTvoucher calldata voucher)
+    function _hash(Voucher.NFTvoucher memory voucher)
         internal
         view
         returns (bytes32)
@@ -165,7 +190,7 @@ contract Template721 is
      * @dev Will revert if the signature is invalid.
      * @param voucher is a NFTvoucher describing the NFT to be bought
      */
-    function _verify(Voucher.NFTvoucher calldata voucher)
+    function _verify(Voucher.NFTvoucher memory voucher)
         internal
         view
         returns (address)
@@ -198,10 +223,11 @@ contract Template721 is
         address royaltyKeeper,
         uint96 royaltyFees
     ) internal {
-        require(totalSupply <= maxSupply, "Template721: max limit exceed");
+        require(totalSupply < maxSupply, "Template721: max limit exceed");
         _safeMint(to, tokenId, "");
         _setTokenURI(tokenId, tokenURI);
         totalSupply++;
+
         if (royaltyKeeper != address(0)) {
             _setTokenRoyalty(tokenId, royaltyKeeper, royaltyFees);
         }

@@ -18,7 +18,6 @@ class BuyerVoucher {
     const { _contract, _signer } = data;
     this.contract = _contract;
     this.signer = _signer;
-    // console.log(_signer.address,_contract.address,"contract and address");
   }
 
   async createVoucher(
@@ -28,6 +27,7 @@ class BuyerVoucher {
     amount: any,
     pricePaid: any,
     counter: any,
+    nonce:any,
     isCustodial: any
   ) {
     const voucher = {
@@ -37,6 +37,7 @@ class BuyerVoucher {
       amount,
       pricePaid,
       counter,
+      nonce,
       isCustodial,
     };
     const domain = await this._signingDomain();
@@ -48,6 +49,7 @@ class BuyerVoucher {
         { name: "amount", type: "uint256" },
         { name: "pricePaid", type: "uint256" },
         { name: "counter", type: "uint256" },
+        { name: "nonce", type: "uint256" },
         { name: "isCustodial", type: "bool" },
       ],
     };
@@ -70,6 +72,7 @@ class BuyerVoucher {
     amount: any,
     pricePaid: any,
     counter: any,
+    nonce:any,
     isCustodial: any
   ) {
     const voucher = {
@@ -79,6 +82,7 @@ class BuyerVoucher {
       amount,
       pricePaid,
       counter,
+      nonce,
       isCustodial,
     };
     const domain = await this._signingDomain();
@@ -90,6 +94,7 @@ class BuyerVoucher {
         { name: "amount", type: "uint256" },
         { name: "pricePaid", type: "uint256" },
         { name: "counter", type: "uint256" },
+        { name: "nonce", type: "uint256" },
         { name: "isCustodial", type: "bool" },
       ],
     };

@@ -1,4 +1,6 @@
-// import { ethers ,waffle} from "hardhat";
+import { ethers ,waffle} from "hardhat";
+
+import { Console } from "console";
 
 const SIGNING_DOMAIN_NAME = "HeftyVerse_NFT_Voucher"; // encode krne ke liye salt lgti hai  ex:-  adding formula  values alg dono ki 2 persons
 const SIGNING_DOMAIN_VERSION = "1";
@@ -18,7 +20,6 @@ class LazyMinting {
     const { _contract, _signer } = data;
     this.contract = _contract;
     this.signer = _signer;
-    // console.log(_signer.address,_contract.address,"contract and address");
   }
 
   async createVoucher(
@@ -68,7 +69,9 @@ class LazyMinting {
     if (this._domain != null) {
       return this._domain;
     }
-    const chainId = await this.contract.getChainID();
+    // console.log("chain ID");
+    const chainId = await this.contract.getChainID();//chain id error
+    
     this._domain = {
       name: SIGNING_DOMAIN_NAME,
       version: SIGNING_DOMAIN_VERSION,

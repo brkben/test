@@ -4,6 +4,7 @@ import "hardhat-typechain";
 import "hardhat-gas-reporter";
 import "@nomiclabs/hardhat-etherscan";
 import dotenv from "dotenv";
+import "@nomiclabs/hardhat-web3";
 require('hardhat-contract-sizer');
 require('solidity-coverage');
 
@@ -23,7 +24,7 @@ export default {
     disambiguatePaths: false,
     runOnCompile: true,
     strict: false,
-    only: ['Factory', 'Marketplace721', 'Marketplace1155', 'Template721', 'Template1155', 'SingleMarket', 'SingleMarketPlace2', 'SingleMarketPlace3']
+    only: ['Factory', 'Marketplace721', 'Marketplace1155', 'Template721', 'Template1155', 'SingleMarket', 'SingleMarketPlace2', 'SingleMarketPlace3','Airdrop']
   },
 
 
@@ -33,30 +34,34 @@ export default {
       allowUnlimitedContractSize: true,
 
     },
-    mumbaitest: {
-      url: " https://rpc-mumbai.maticvigil.com/",
-      accounts: [`0x${process.env.PVTKEY}`]
-    },
+    // mumbaitest: {
+    //   url: " https://rpc-mumbai.maticvigil.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
+    // matic: {
+    //   url: "https://polygon-rpc.com/",
+    //   accounts: [`0x${process.env.PVTKEY}`]
+    // },
     // localhost: {
     //   url: "http://127.0.0.1:8545",
     // },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+    },
     // rinkeby: {
     //   url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
     //   accounts: [`0x${process.env.PVTKEY}`],
     // },
     // testnet: {
-    //   url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+    //   url: "https://data-seed-prebsc-2-s2.binance.org:8545",
     //   chainId: 97,
-    //   gasPrice: 20000000000,
-    //   accounts: {
-    //     mnemonic: process.env.TESTNET_MNEMONIC,
-    //   },
+    //   // gasPrice: 20000000000,
+    //   accounts: [`0x${process.env.PVTKEY}`]
     // },
   },
-  etherscan: {
-    apiKey: process.env.API_FOR_MUMBAI,
-  },
-  solidity: "0.8.14",
+  // etherscan: {
+  //   apiKey: process.env.API_FOR_MUMBAI,
+  // },
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",
@@ -66,10 +71,13 @@ export default {
     enabled: false,
   },
 
-  settings: {
-    optimizer: {
-      enabled: true,
-      runs: 200,
+  solidity: {
+    version: "0.8.14",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 2000,
+      },
     },
   },
 };
