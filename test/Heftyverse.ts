@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ethers } from "hardhat";
+import { ethers} from "hardhat";
+import Web3 from "web3";
 import {
   Template721,
   Template721__factory,
@@ -22,6 +23,10 @@ import { expandTo18Decimals, expandTo6Decimals } from "./utilities/utilities";
 import { expect } from "chai";
 import template1155Voucher from "./utilities/SFTVoucher";
 import { UsdInterface } from "../typechain/Usd";
+import { sign } from "crypto";
+import hardhatConfig from "../hardhat.config";
+import { messagePrefix } from "@ethersproject/hash";
+import { Provider } from "@ethersproject/abstract-provider";
 
 describe("Template", async () => {
   let NFT: Template721;
@@ -33,7 +38,10 @@ describe("Template", async () => {
   let template1155: Template1155;
   let singleMarketplace: SingleMarket;
   let proxy: OwnedUpgradeabilityProxy;
+  const hre = require("hardhat");
 
+  var web3Object = new Web3(hre.network.provider);
+ 
   beforeEach(async () => {
     signers = await ethers.getSigners();
     owner = signers[0];
@@ -71,15 +79,11 @@ describe("Template", async () => {
     );
     await factory
       .connect(owner)
-      .initialize(
-        NFT.address,
-        template1155.address,
-        proxy.address,
-        singleMarketplace.address
-      );
+      .initialize(NFT.address,template1155.address,singleMarketplace.address);
 
     await usdt.mint(signers[1].address, expandTo6Decimals(100));
   });
+
   describe("Single Market place: 721 NFT", async () => {
     it("custodial to custodial", async () => {
       await factory
@@ -102,6 +106,7 @@ describe("Template", async () => {
         _contract: TRS,
         _signer: signers[1],
       });
+
       const voucherNFT = await TemplateVoucher.createVoucher(
         Tseries,
         1,
@@ -140,6 +145,7 @@ describe("Template", async () => {
         true,
         true
       );
+    
       const buyer = await new BuyerVoucher({
         _contract: singleMarketplace,
         _signer: signers[6],
@@ -151,6 +157,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -171,8 +178,10 @@ describe("Template", async () => {
         voucherNFT,
         true
       );
+      let nonce = await web3Object.eth.getTransactionCount(signers[6].address);
+     
       expect(await TRS.balanceOf(signers[6].address)).to.be.eq(1);
-``
+
       //Secondary buy
       const TemplateVoucherNFT2 = await new LazyMinting({
         _contract: TRS,
@@ -216,10 +225,14 @@ describe("Template", async () => {
         true,
         true
       );
+
+      
       const buyer2 = await new BuyerVoucher({
         _contract: singleMarketplace,
         _signer: signers[7],
       });
+      
+
       const buyerVoucher2 = await buyer2.createVoucher(
         Tseries,
         signers[7].address,
@@ -227,6 +240,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -241,6 +255,7 @@ describe("Template", async () => {
       expect(await TRS.balanceOf(signers[7].address)).to.be.eq(1);
     });
 
+ 
     it("custodial to non-custodial", async () => {
       await factory
         .connect(owner)
@@ -310,6 +325,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -387,6 +403,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -407,6 +424,289 @@ describe("Template", async () => {
       
       expect(await TRS.balanceOf(signers[7].address)).to.be.eq(1);
     });
+
+    it("ERROR: custodial to non-custodial, price invalid", async () => {
+      await factory
+        .connect(owner)
+        .create721Token(
+          "TestName",
+          "TestSymbol",
+          owner.address,
+          signers[1].address,
+          3
+        );
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+      const TRS = await new Template721__factory(owner).attach(Tseries);
+
+      //creating vouchers
+      const TemplateVoucher = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT = await TemplateVoucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        true,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const Template1155Voucher = await new template1155Voucher({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucher = await Template1155Voucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        1,
+        1,
+        "TestURI",
+        true,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const seller = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[1],
+      });
+      const sellerVoucher = await seller.createVoucher(
+        Tseries,
+        signers[1].address,
+        1,
+        1,
+        expandTo6Decimals(7),
+        1,
+        true,
+        true
+      );
+      const buyer = await new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const buyerVoucher = await buyer.createVoucher(
+        Tseries,
+        signers[6].address,
+        1,
+        1,
+        expandTo6Decimals(7),
+        1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        false
+      );
+
+      //Primary Buy
+      await usdt
+        .connect(owner)
+        .transfer(signers[6].address, expandTo6Decimals(10000));
+      await usdt
+        .connect(owner)
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[6])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+
+      await expect(singleMarketplace.Buy(
+        buyerVoucher,
+        sellerVoucher,
+        voucher,
+        voucherNFT,
+        true
+      )).to.be.revertedWith("PI");
+
+    });
+
+    it("predict NFT Contract Address", async () => {
+      await factory
+        .connect(owner)
+        .create721Token(
+          "TestName",
+          "TestSymbol",
+          owner.address,
+          signers[1].address,
+          3
+        );
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+      const TRS = await new Template721__factory(owner).attach(Tseries);
+      await factory.connect(owner).predictNFTContractAddress("name",TRS.address,signers[2].address,1);
+    });
+
+    it("custodial to non-custodial, balance check ", async () => {
+      await factory
+      .connect(owner)
+      .create721Token(
+        "TestName",
+        "TestSymbol",
+        owner.address,
+        signers[1].address,
+        3
+      );
+    const Tseries = await factory
+      .connect(owner)
+      .userNFTContracts(owner.address, 0);
+    const TRS = await new Template721__factory(owner).attach(Tseries);
+
+    //creating vouchers
+    const TemplateVoucher = await new LazyMinting({
+      _contract: TRS,
+      _signer: signers[1],
+    });
+    const voucherNFT = await TemplateVoucher.createVoucher(
+      Tseries,
+      1,
+      expandTo6Decimals(10),
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+    const Template1155Voucher = await new template1155Voucher({
+      _contract: TRS,
+      _signer: signers[1],
+    });
+    const voucher = await Template1155Voucher.createVoucher(
+      Tseries,
+      1,
+      expandTo6Decimals(10),
+      1,
+      1,
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+    const seller = new SellerVoucher({
+      _contract: singleMarketplace,
+      _signer: signers[1],
+    });
+    const sellerVoucher = await seller.createVoucher(
+      Tseries,
+      signers[1].address,
+      1,
+      1,
+      expandTo6Decimals(10),
+      1,
+      true,
+      true
+    );
+    const buyer = await new BuyerVoucher({
+      _contract: singleMarketplace,
+      _signer: signers[6],
+    });
+    const buyerVoucher = await buyer.createVoucher(
+      Tseries,
+      signers[6].address,
+      1,
+      1,
+      expandTo6Decimals(10),
+      1,
+      await web3Object.eth.getTransactionCount(signers[6].address),
+      false
+    );
+
+    //Primary Buy
+    await usdt
+      .connect(owner)
+      .transfer(signers[6].address, expandTo6Decimals(10000));
+    await usdt
+      .connect(owner)
+      .approve(singleMarketplace.address, expandTo6Decimals(1000));
+    await usdt
+      .connect(signers[6])
+      .approve(singleMarketplace.address, expandTo6Decimals(1000));
+
+    await singleMarketplace.Buy(
+      buyerVoucher,
+      sellerVoucher,
+      voucher,
+      voucherNFT,
+      true
+    );
+    expect(await TRS.balanceOf(signers[6].address)).to.be.eq(1);
+
+
+    await TRS.connect(signers[6]).transferFrom(signers[6].address, signers[9].address, 1);
+
+      //Secondary buy
+      const TemplateVoucherNFT2 = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT2 = await TemplateVoucherNFT2.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        false,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const TemplateVoucher2 = await new template1155Voucher({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucher2 = await TemplateVoucher2.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        1,
+        1,
+        "TestURI",
+        false,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const seller2 = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const sellerVoucher2 = await seller2.createVoucher(
+        Tseries,
+        signers[6].address,
+        1,
+        1,
+        expandTo6Decimals(10),
+        1,
+        true,
+        true
+      );
+      const buyer2 = await new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[7],
+      });
+      const buyerVoucher2 = await buyer2.createVoucher(
+        Tseries,
+        signers[7].address,
+        1,
+        1,
+        expandTo6Decimals(10),
+        1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
+        false
+      );
+
+      await usdt
+        .connect(owner)
+        .transfer(signers[7].address, expandTo6Decimals(10000));
+      await usdt
+        .connect(signers[7])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await expect (singleMarketplace.Buy(
+        buyerVoucher2,
+        sellerVoucher2,
+        voucher2,
+        voucherNFT2,
+        true
+      )).to.be.revertedWith("NO");
+    });
+
+
+
 
     it("non-custodial to custodial", async () => {
       await factory
@@ -477,6 +777,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -554,6 +855,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -643,6 +945,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -720,6 +1023,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -807,6 +1111,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -899,6 +1204,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -992,6 +1298,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -1085,6 +1392,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -1108,6 +1416,8 @@ describe("Template", async () => {
     });
 
     //Custodial to custodial
+
+
     it("ERROR: Signature of buyer not matching at primary buy(C2C)", async () => {
       //create collection
       await factory
@@ -1179,6 +1489,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -1270,6 +1581,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -1347,6 +1659,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -1431,6 +1744,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -1507,6 +1821,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         true
       );
 
@@ -1596,6 +1911,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -1687,6 +2003,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -1764,6 +2081,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -1849,6 +2167,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -1926,6 +2245,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         false
       );
 
@@ -2015,6 +2335,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -2107,6 +2428,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -2185,6 +2507,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
 
@@ -2272,6 +2595,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
 
@@ -2350,6 +2674,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         true
       );
 
@@ -2366,7 +2691,7 @@ describe("Template", async () => {
       ).to.be.revertedWith("IB");
     });
 
-    // //non-custodial to non-custodial
+    // non-custodial to non-custodial
 
     it("ERROR: Signature of buyer not matching at primary buy(N2N)", async () => {
       //create collection
@@ -2439,6 +2764,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -2532,6 +2858,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -2610,6 +2937,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
 
@@ -2696,6 +3024,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
 
@@ -2774,6 +3103,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[5].address),
         false
       );
 
@@ -2909,6 +3239,14 @@ describe("Template", async () => {
   });
 
   describe("Template 721 test cases", async () => {
+    it("Withdrawing stuck token", async () => {
+      let balancebefore = await usdt.balanceOf(owner.address);
+      await usdt
+        .connect(owner)
+        .transfer(singleMarketplace.address, expandTo6Decimals(1000));
+      await NFT.connect(owner).withdrawStuckToken(usdt.address, false);
+     // expect(await usdt.balanceOf(owner.address)).to.be.eq(balancebefore);
+    });
     it("Redeem functionality", async () => {
       const TemplateVoucher = await new LazyMinting({
         _contract: NFT,
@@ -2926,6 +3264,8 @@ describe("Template", async () => {
       await expect(
         NFT.redeem(voucherNFT, signers[2].address)
       ).to.be.revertedWith("IA");
+
+      
 
       const TemplateVoucher2 = await new LazyMinting({
         _contract: NFT,
@@ -2978,6 +3318,74 @@ describe("Template", async () => {
       ).to.be.revertedWith("ERC721: caller is not token owner nor approved");
     });
 
+//new
+    it("ERROR :max limit for NFT exceeded", async () => {
+    const TemplateVoucher = await new LazyMinting({
+      _contract: NFT,
+      _signer: signers[1],
+    });
+  
+  const voucherNFT1 = await TemplateVoucher.createVoucher(
+      NFT.address,
+      1,
+      expandTo6Decimals(10),
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+    await(
+      NFT.connect(signers[1]).redeem(voucherNFT1, signers[2].address)
+    );
+
+    const voucherNFT2 = await TemplateVoucher.createVoucher(
+      NFT.address,
+      2,
+      expandTo6Decimals(10),
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+    await(
+      NFT.connect(signers[1]).redeem(voucherNFT2, signers[2].address)
+    );
+
+    const voucherNFT3 = await TemplateVoucher.createVoucher(
+      NFT.address,
+      3,
+      expandTo6Decimals(10),
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+    await(
+      NFT.connect(signers[1]).redeem(voucherNFT3, signers[2].address)
+    );
+
+    const voucherNFT4 = await TemplateVoucher.createVoucher(
+      NFT.address,
+      4,
+      expandTo6Decimals(10),
+      "TestURI",
+      true,
+      signers[2].address,
+      expandTo6Decimals(0)
+    );
+   
+
+    
+    await expect(
+      NFT.connect(signers[1]).redeem(voucherNFT4, signers[2].address)).to.be.revertedWith("Template721: max limit exceed");
+
+    
+
+  
+
+  });
+
+
     it("setting admin", async () => {
       await NFT.connect(signers[1]).setAdmin(signers[4].address);
       expect(await NFT.admin()).to.be.eq(signers[4].address);
@@ -2999,11 +3407,6 @@ describe("Template", async () => {
         NFT.connect(signers[1]).setCreator(ethers.constants.AddressZero)
       ).to.be.revertedWith("ZA");
     });
-
-    // it("setting token", async () => {
-    //   await NFT.setToken(signers[4].address);
-    //   expect(await NFT.token()).to.be.eq(signers[4].address);
-    // });
   });
 
   describe("Factory Test cases", async () => {
@@ -3092,8 +3495,22 @@ describe("Template", async () => {
   });
 
   describe("Template 1155 test cases", async () => {
+    it("Withdrawing stuck token, 1155", async () => {
+      let balancebefore = await usdt.balanceOf(owner.address);
+      await usdt
+        .connect(owner)
+        .transfer(singleMarketplace.address, expandTo6Decimals(1000));
+      await template1155.connect(owner).withdrawStuckToken(usdt.address, false);
+    });
+
+    it("Withdrawing stuck token, factory", async () => {
+      let balancebefore = await usdt.balanceOf(owner.address);
+      await usdt
+        .connect(owner)
+        .transfer(singleMarketplace.address, expandTo6Decimals(1000));
+      await factory.connect(owner).withdrawStuckToken(usdt.address, false);
+    });
     it("Set Admin", async () => {
-      // await template1155.connect(owner)
       await template1155.connect(signers[1]).setAdmin(signers[4].address);
       expect(await template1155.admin()).to.be.eq(signers[4].address);
     });
@@ -3140,7 +3557,6 @@ describe("Template", async () => {
         signers[2].address,
         expandTo6Decimals(0)
       );
-      // await template1155.isApprovedForAll(template1155
       await template1155
         .connect(signers[1])
         .redeem(voucher3, signers[2].address, 1);
@@ -3208,7 +3624,6 @@ describe("Template", async () => {
         signers[2].address,
         expandTo6Decimals(0)
       );
-      // await template1155.isApprovedForAll(template1155
       await expect(
         template1155.connect(signers[2]).redeem(voucher3, signers[2].address, 1)
       ).to.be.revertedWith("ERC1155:caller is not token owner nor approved");
@@ -3329,12 +3744,6 @@ describe("Template", async () => {
   });
 
   describe("SingleMarketplace: 1155 NFT ", async () => {
-    // it("factory", async() =>{
-    //   await factory.connect(signers[0]).create721Token("testName","testSymbol",owner.address,superOwner.address,)
-    //   await factory.connect(signers[1]).create721Token("heftiverse","hef",owner.address,superOwner.address,);
-    //   await factory.connect(signers[2]).create721Token("hefty","hev",owner.address,superOwner.address,);
-    //   });
-    // });
 
     it("custodial to custodial buy", async () => {
       //create collection
@@ -3403,6 +3812,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3480,6 +3890,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -3501,6 +3912,8 @@ describe("Template", async () => {
       );
       expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
     });
+
+    
 
     it("custodial to custodial buy: royalty keeper", async () => {
       //create collection
@@ -3569,6 +3982,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3646,6 +4060,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -3666,6 +4081,179 @@ describe("Template", async () => {
         false
       );
       expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
+    });
+
+//new
+    it("custodial to custodial buy: balance check", async () => {
+      //create collection
+      await factory
+        .connect(owner)
+        .create1155Token("T-series", owner.address, superOwner.address);
+
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+
+      const TRS = await new Template1155__factory(owner).attach(Tseries);
+      //creating vouchers
+      const Template1155Voucher = await new template1155Voucher({
+        _contract: TRS,
+        _signer: owner,
+      });
+      const TemplateVoucher = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+
+      const voucher = await Template1155Voucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        2,
+        1,
+        "TestURI",
+        true,
+        signers[4].address,
+        expandTo6Decimals(0)
+      );
+      const voucherNFT = await TemplateVoucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        true,
+        signers[4].address,
+        expandTo6Decimals(0)
+      );
+      const sellerVoucher = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: owner,
+      });
+
+      const VoucherSell = await sellerVoucher.createVoucher1155(
+        Tseries,
+        owner.address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        1,
+        true,
+        true
+      );
+      const buyerVoucher = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const Voucherbuy = await buyerVoucher.createVoucher1155(
+        Tseries,
+        signers[6].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        true
+      );
+      //Primary Buy
+
+      await usdt
+        .connect(owner)
+        .transfer(signers[6].address, expandTo6Decimals(1000));
+
+      await usdt
+        .connect(owner)
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      );
+
+      expect(await TRS.balanceOf(signers[6].address, 1)).to.be.eq(2);
+
+      // transfer 1155
+        await TRS.connect(signers[6]).safeTransferFrom(signers[6].address, signers[1].address, 1, 2, "0xee");
+
+      //Secondary Buy
+
+      const Template1155Voucher2 = new template1155Voucher({
+        _contract: TRS,
+        _signer: signers[6],
+      });
+      const TemplateVoucherNFT2 = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT2 = await TemplateVoucherNFT2.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        false,
+        signers[4].address,
+        expandTo6Decimals(0)
+      );
+
+      const voucher2 = await Template1155Voucher2.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(3),
+        2,
+        2,
+        "testURI",
+        false,
+        signers[4].address,
+        expandTo6Decimals(0)
+      );
+      const sellerVoucher2 = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const VoucherSell2 = await sellerVoucher2.createVoucher1155(
+        Tseries,
+        signers[6].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        true,
+        true
+      );
+
+      const buyerVoucher2 = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[7],
+      });
+      const Voucherbuy2 = await buyerVoucher2.createVoucher1155(
+        Tseries,
+        signers[7].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
+        true
+      );
+      await usdt
+        .connect(owner)
+        .transfer(signers[7].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[7])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await TRS.connect(signers[6]).setApprovalForAll(
+        singleMarketplace.address,
+        true
+      );
+
+      await expect(singleMarketplace.Buy(
+        Voucherbuy2,
+        VoucherSell2,
+        voucher2,
+        voucherNFT2,
+        false
+      )).to.be.revertedWith("NO");
     });
 
     it("ERROR custodial to custodial primary buy:invalid buyer", async () => {
@@ -3731,6 +4319,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3814,6 +4403,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3898,6 +4488,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -3969,6 +4560,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -4055,6 +4647,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -4126,6 +4719,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[3].address),
         true
       );
       await usdt
@@ -4199,6 +4793,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4283,6 +4878,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4367,6 +4963,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4399,6 +4996,7 @@ describe("Template", async () => {
         )
       ).to.be.revertedWith("AMI");
     });
+
 
     it("custodial to custodial primary buy :price doesn't match", async () => {
       //create collection
@@ -4451,6 +5049,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(9),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       const TemplateVoucher = await new LazyMinting({
@@ -4504,7 +5103,7 @@ describe("Template", async () => {
         1,
         expandTo6Decimals(3),
         2,
-        1,
+        3,
         "testURI",
         true,
         signers[2].address,
@@ -4548,6 +5147,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4619,6 +5219,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -4640,6 +5241,339 @@ describe("Template", async () => {
       );
       expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
     });
+
+
+    it("custodial to noncustodial buy, check counter", async () => {
+      //create collection
+      await factory
+        .connect(owner)
+        .create1155Token("T-series", owner.address, signers[1].address);
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+      const TRS = await new Template1155__factory(owner).attach(Tseries);
+      const addressOfTemplate = Tseries;
+      //creating vouchers
+      const Template1155Voucher = new template1155Voucher({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucher = await Template1155Voucher.createVoucher(
+        addressOfTemplate,
+        1,
+        expandTo6Decimals(3),
+        5,
+        3,
+        "testURI",
+        true,
+        signers[2].address,
+        1
+      );
+      const TemplateVoucher = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT = await TemplateVoucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        true,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const sellerVoucher = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: owner,
+      });
+      const VoucherSell = await sellerVoucher.createVoucher1155(
+        Tseries,
+        owner.address,
+        1,
+        5,
+        expandTo6Decimals(10),
+        2,
+        true,
+        true
+      );
+      const buyerVoucher = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const Voucherbuy = await buyerVoucher.createVoucher1155(
+        Tseries,
+        signers[6].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        false
+      );
+      //Primary Buy
+      await usdt
+        .connect(owner)
+        .transfer(signers[6].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[6])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      );
+
+      const buyerVoucher2 = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[8],
+      });
+
+      const Voucherbuy2 = await buyerVoucher2.createVoucher1155(
+        Tseries,
+        signers[8].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        false
+      );
+      //Primary Buy
+      await usdt
+        .connect(owner)
+        .transfer(signers[8].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[8])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy2,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      );
+
+      const buyerVoucher3 = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[9],
+      });
+
+      const Voucherbuy3 = await buyerVoucher3.createVoucher1155(
+        Tseries,
+        signers[9].address,
+        1,
+        1,
+        expandTo6Decimals(10),
+        2,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        false
+      );
+      //Primary Buy
+      await usdt
+        .connect(owner)
+        .transfer(signers[9].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[9])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy3,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      );
+ });
+
+//new
+    it("ERROR: custodial to noncustodial buy , counter used", async () => {
+      //create collection
+      await factory
+        .connect(owner)
+        .create1155Token("T-series", owner.address, signers[1].address);
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+      const TRS = await new Template1155__factory(owner).attach(Tseries);
+      const addressOfTemplate = Tseries;
+      //creating vouchers
+      const Template1155Voucher = new template1155Voucher({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucher = await Template1155Voucher.createVoucher(
+        addressOfTemplate,
+        1,
+        expandTo6Decimals(3),
+        2,
+        1,
+        "testURI",
+        true,
+        signers[2].address,
+        1
+      );
+      const TemplateVoucher = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT = await TemplateVoucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        true,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const sellerVoucher = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: owner,
+      });
+      const VoucherSell = await sellerVoucher.createVoucher1155(
+        Tseries,
+        owner.address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        1,
+        true,
+        true
+      );
+      const buyerVoucher = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const Voucherbuy = await buyerVoucher.createVoucher1155(
+        Tseries,
+        signers[6].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        false
+      );
+      //Primary Buy
+      await usdt
+        .connect(owner)
+        .transfer(signers[6].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[6])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      );
+      expect(await TRS.balanceOf(signers[6].address, 1)).to.be.eq(2);
+      //  Secondary Buy
+      const Template1155Voucher2 = new template1155Voucher({
+        _contract: TRS,
+        _signer: signers[6],
+      });
+      const voucher2 = await Template1155Voucher2.createVoucher(
+        addressOfTemplate,
+        1,
+        expandTo6Decimals(3),
+        2,
+        2,
+        "testURI",
+        false,
+        signers[2].address,
+        1
+      );
+      const TemplateVoucher2 = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT2 = await TemplateVoucher2.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        true,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const sellerVoucher2 = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const VoucherSell2 = await sellerVoucher2.createVoucher1155(
+        Tseries,
+        signers[6].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        true,
+        true
+      );
+      const buyerVoucher2 = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[7],
+      });
+      const Voucherbuy2 = await buyerVoucher2.createVoucher1155(
+        Tseries,
+        signers[7].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
+        false
+      );
+      await usdt
+        .connect(owner)
+        .transfer(signers[7].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[7])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await TRS.connect(signers[6]).setApprovalForAll(
+        singleMarketplace.address,
+        true
+      );
+
+      const buyerVoucher3 = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[7],
+      });
+      const Voucherbuy3 = await buyerVoucher3.createVoucher1155(
+        Tseries,
+        signers[7].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
+        false
+      );
+      await usdt
+        .connect(owner)
+        .transfer(signers[7].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[7])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy3,
+        VoucherSell2,
+        voucher2,
+        voucherNFT2,
+        false
+      );
+      await expect(singleMarketplace.Buy(
+        Voucherbuy2,
+        VoucherSell2,
+        voucher2,
+        voucherNFT2,
+        false
+      )).to.be.revertedWith("CU");
+    });
+
+   
 
     it("ERROR: custodial to noncustodial primary buy: invalid buyer", async () => {
       //create collection
@@ -4706,6 +5640,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4789,6 +5724,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4873,6 +5809,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(3),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -4957,6 +5894,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -5028,6 +5966,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -5115,6 +6054,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -5186,6 +6126,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[3].address),
         false
       );
       await usdt
@@ -5273,6 +6214,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5345,6 +6287,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -5431,6 +6374,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5515,6 +6459,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5600,6 +6545,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5685,6 +6631,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5757,6 +6704,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         true
       );
       await usdt
@@ -5844,6 +6792,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         true
       );
       //Primary Buy
@@ -5916,6 +6865,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[2].address),
         true
       );
       await usdt
@@ -6002,6 +6952,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6074,6 +7025,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -6095,6 +7047,109 @@ describe("Template", async () => {
       );
       expect(await TRS.balanceOf(signers[7].address, 1)).to.be.eq(2);
     });
+
+//new
+    it("non custodial to non custodial buy, wrong nonce", async () => {
+      await factory
+        .connect(owner)
+        .create1155Token("T-series", owner.address, superOwner.address);
+      const Tseries = await factory
+        .connect(owner)
+        .userNFTContracts(owner.address, 0);
+      const TRS = await new Template1155__factory(owner).attach(Tseries);
+      const addressOfTemplate = Tseries;
+      //creating vouchers
+      const Template1155Voucher = new template1155Voucher({
+        _contract: TRS,
+        _signer: owner,
+      });
+      const voucher = await Template1155Voucher.createVoucher(
+        addressOfTemplate,
+        1,
+        expandTo6Decimals(3),
+        2,
+        1,
+        "testURI",
+        true,
+        signers[2].address,
+        1
+      );
+      const TemplateVoucher = await new LazyMinting({
+        _contract: TRS,
+        _signer: signers[1],
+      });
+      const voucherNFT = await TemplateVoucher.createVoucher(
+        Tseries,
+        1,
+        expandTo6Decimals(10),
+        "TestURI",
+        true,
+        signers[2].address,
+        expandTo6Decimals(0)
+      );
+      const sellerVoucher = new SellerVoucher({
+        _contract: singleMarketplace,
+        _signer: owner,
+      });
+      const VoucherSell = await sellerVoucher.createVoucher1155(
+        Tseries,
+        owner.address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        1,
+        true,
+        false
+      );
+      const buyerVoucher = new BuyerVoucher({
+        _contract: singleMarketplace,
+        _signer: signers[6],
+      });
+      const Voucherbuy = await buyerVoucher.createVoucher1155(
+        Tseries,
+        signers[6].address,
+        1,
+        2,
+        expandTo6Decimals(10),
+        1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
+        false
+      );
+      //Primary Buy
+
+      await usdt
+        .connect(owner)
+        .transfer(signers[6].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[6])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await singleMarketplace.Buy(
+        Voucherbuy,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      );
+      
+      expect(await TRS.balanceOf(signers[6].address, 1)).to.be.eq(2);
+
+      await usdt
+        .connect(owner)
+        .transfer(signers[8].address, expandTo6Decimals(1000));
+      await usdt
+        .connect(signers[8])
+        .approve(singleMarketplace.address, expandTo6Decimals(1000));
+      await expect(singleMarketplace.Buy(
+        Voucherbuy,
+        VoucherSell,
+        voucher,
+        voucherNFT,
+        false
+      )).to.be.revertedWith("WN");
+     
+    });
+
+
 
     it("non custodial to non custodial buy : mismatched addresses", async () => {
       await factory
@@ -6166,6 +7221,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6252,6 +7308,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6336,6 +7393,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6420,6 +7478,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6492,6 +7551,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[7].address),
         false
       );
       await usdt
@@ -6578,6 +7638,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         1,
+        await web3Object.eth.getTransactionCount(signers[6].address),
         false
       );
       //Primary Buy
@@ -6650,6 +7711,7 @@ describe("Template", async () => {
         2,
         expandTo6Decimals(10),
         2,
+        await web3Object.eth.getTransactionCount(signers[3].address),
         false
       );
       await usdt
