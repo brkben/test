@@ -116,7 +116,6 @@ contract Template1155 is
         if (left == 0) {
             left = _voucher.amount - amount;
         } else {
-            require(left >= 0, "ALZ"); //Amount  leftless than zero
             left = left - amount;
         }
         if (left == 0) redeemedCounter[_voucher.counter] = true;
@@ -151,12 +150,15 @@ contract Template1155 is
         uint256 amount,
         bytes memory data
     ) public override {
+
         if (msg.sender != IFactory(factory).marketplace())
             require(
                 from == _msgSender() || isApprovedForAll(from, _msgSender()),
                 "ERC1155:caller is not token owner nor approved"
             );
+
         _safeTransferFrom(from, to, id, amount, data);
+
     }
 
     /**
