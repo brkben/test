@@ -157,7 +157,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      * @param seller is a HeftyVerseSeller describing the NFT to be sold
      */
     function resetCounter(HeftyVerseSeller memory seller) external {
-        require(_msgSender() == admin, "NA"); //not owner
+        require(msg.sender == admin, "NA"); //not owner
         amountLeft[seller.counter] = 0;
         usedCounters[seller.counter] = true;
     }
@@ -168,7 +168,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      */
     function setToken(address _token) external {
         //not admin
-        require(_msgSender() == admin, "NA");
+        require(msg.sender == admin, "NA");
         //zero address
         require(_token != address(0), "ZA");
         token = IERC20Upgradeable(_token);
@@ -181,7 +181,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      */
     function setWallet(address _wallet, bool _isMarketingWallet) external {
         // not admin
-        require(_msgSender() == admin, "NA");
+        require(msg.sender == admin, "NA");
         //zero address
         require(_wallet != address(0), "ZA");
         if (_isMarketingWallet) {
@@ -197,7 +197,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      */
     function setMarketFee(uint _fee) external {
         // not admin
-        require(_msgSender() == admin, "NA");
+        require(msg.sender == admin, "NA");
         //invalid Value
         require(_fee <= 10000, "IV");
         marketFee = _fee;
@@ -227,7 +227,7 @@ contract SingleMarket is EIP712Upgradeable, BasicMetaTransaction {
      * @param _admin is the new admin of the contract
      */
     function transferAdminRole(address _admin) external {
-        require(_msgSender() == admin, "NA"); // not admin
+        require(msg.sender == admin, "NA"); // not admin
         //zero address
         require(_admin != address(0), "ZA");
         admin = _admin;
