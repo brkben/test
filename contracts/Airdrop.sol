@@ -68,7 +68,7 @@ contract Airdrop is
         uint96 royaltyFees
     ) external {
         // not admin
-        require(_msgSender() == admin, "NA"); 
+        require(_msgSender() == admin, "NA");
         _mint(to, tokenId, mintAmount, "");
         _setURI(tokenId, tokenURI);
         if (royaltyKeeper != address(0)) {
@@ -83,11 +83,11 @@ contract Airdrop is
      */
     function withdrawStuckToken(address _token, bool isMatic) external {
         uint256 _amount;
-        if(isMatic) {
+        if (isMatic) {
             _amount = address(this).balance;
-            (bool success,) = admin.call{value : _amount}("");
+            (bool success, ) = admin.call{value: _amount}("");
             // not successfull
-            require(success,"NS");
+            require(success, "NS");
         } else {
             _amount = IERC20Upgradeable(_token).balanceOf(address(this));
             IERC20Upgradeable(_token).transfer(admin, _amount);
@@ -115,7 +115,9 @@ contract Airdrop is
         creator = _creator;
     }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(ERC1155Upgradeable, ERC2981Upgradeable)
@@ -171,8 +173,8 @@ contract Airdrop is
             "ERC1155: not approved"
         );
         // invalid length
-        require(to.length == ids.length && ids.length == amounts.length,"IL");
-        for(uint i =0; i< to.length; i++) {
+        require(to.length == ids.length && ids.length == amounts.length, "IL");
+        for (uint i = 0; i < to.length; i++) {
             _safeTransferFrom(from, to[i], ids[i], amounts[i], "");
         }
     }

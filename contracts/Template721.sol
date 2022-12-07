@@ -36,7 +36,6 @@ contract Template721 is
     // Event for token withdraw
     event TokenWithdrawn(uint256 _amount);
 
-
     /**
      * @notice Initializes the contract by setting a `admin`, `creator`and `factory` for the contract
      * @param _name is set as the name of the deployed ERC721
@@ -70,9 +69,10 @@ contract Template721 is
      * @param redeemer The address of the account which will receive the NFT upon success.
      * @param _voucher A signed NFTvoucher that describes the NFT to be redeemed.
      */
-    function redeem(Voucher.NFTvoucher memory _voucher, address redeemer)
-        external
-    {
+    function redeem(
+        Voucher.NFTvoucher memory _voucher,
+        address redeemer
+    ) external {
         require(_voucher.nftAddress == address(this), "IA"); //invalid address
         address signer = _verify(_voucher);
         require(signer == admin || signer == creator, "IS"); //invalid signer
@@ -93,11 +93,11 @@ contract Template721 is
      */
     function withdrawStuckToken(address _token, bool isMatic) external {
         uint256 _amount;
-        if(isMatic) {
+        if (isMatic) {
             _amount = address(this).balance;
-            (bool success,) = admin.call{value : _amount}("");
+            (bool success, ) = admin.call{value: _amount}("");
             // not successfull
-            require(success,"NS");
+            require(success, "NS");
         } else {
             _amount = IERC20Upgradeable(_token).balanceOf(address(this));
             IERC20Upgradeable(_token).transfer(admin, _amount);
@@ -150,7 +150,9 @@ contract Template721 is
         _transfer(from, to, tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(ERC721Upgradeable, ERC2981Upgradeable)
@@ -163,11 +165,9 @@ contract Template721 is
      * @notice Returns a hash of the given NFTvoucher, prepared using EIP712 typed data hashing rules.
      * @param voucher is a NFTvoucher to hash.
      */
-    function _hash(Voucher.NFTvoucher memory voucher)
-        internal
-        view
-        returns (bytes32)
-    {
+    function _hash(
+        Voucher.NFTvoucher memory voucher
+    ) internal view returns (bytes32) {
         return
             _hashTypedDataV4(
                 keccak256(
@@ -190,11 +190,9 @@ contract Template721 is
      * @dev Will revert if the signature is invalid.
      * @param voucher is a NFTvoucher describing the NFT to be bought
      */
-    function _verify(Voucher.NFTvoucher memory voucher)
-        internal
-        view
-        returns (address)
-    {
+    function _verify(
+        Voucher.NFTvoucher memory voucher
+    ) internal view returns (address) {
         bytes32 digest = _hash(voucher);
         return ECDSAUpgradeable.recover(digest, voucher.signature);
     }

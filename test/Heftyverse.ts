@@ -3222,7 +3222,7 @@ describe("Template", async () => {
         true,
         false
       );
-      await singleMarketplace.connect(signers[1]).resetCounter(sellerVoucher);
+      await singleMarketplace.connect(owner).resetCounter(sellerVoucher);
       await expect(
         singleMarketplace.connect(signers[4]).resetCounter(sellerVoucher)
       ).to.be.revertedWith("NA");

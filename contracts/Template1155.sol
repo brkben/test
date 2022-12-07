@@ -65,11 +65,11 @@ contract Template1155 is
      */
     function withdrawStuckToken(address _token, bool isMatic) external {
         uint256 _amount;
-        if(isMatic) {
+        if (isMatic) {
             _amount = address(this).balance;
-            (bool success,) = admin.call{value : _amount}("");
+            (bool success, ) = admin.call{value: _amount}("");
             // not successfull
-            require(success,"NS");
+            require(success, "NS");
         } else {
             _amount = IERC20Upgradeable(_token).balanceOf(address(this));
             IERC20Upgradeable(_token).transfer(admin, _amount);
@@ -131,7 +131,9 @@ contract Template1155 is
         safeTransferFrom(signer, redeemer, _voucher.tokenId, amount, "");
     }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(ERC1155Upgradeable, ERC2981Upgradeable)
@@ -150,7 +152,6 @@ contract Template1155 is
         uint256 amount,
         bytes memory data
     ) public override {
-
         if (msg.sender != IFactory(factory).marketplace())
             require(
                 from == _msgSender() || isApprovedForAll(from, _msgSender()),
@@ -158,7 +159,6 @@ contract Template1155 is
             );
 
         _safeTransferFrom(from, to, id, amount, data);
-
     }
 
     /**
@@ -183,11 +183,9 @@ contract Template1155 is
      * @notice Returns a hash of the given SFTvoucher, prepared using EIP712 typed data hashing rules.
      * @param voucher is a SFTvoucher to hash.
      */
-    function _hash(Voucher.SFTvoucher memory voucher)
-        internal
-        view
-        returns (bytes32)
-    {
+    function _hash(
+        Voucher.SFTvoucher memory voucher
+    ) internal view returns (bytes32) {
         return
             _hashTypedDataV4(
                 keccak256(
@@ -212,11 +210,9 @@ contract Template1155 is
      * @dev Will revert if the signature is invalid.
      * @param voucher is a SFTvoucher describing the SFT to be bought
      */
-    function _verify(Voucher.SFTvoucher memory voucher)
-        internal
-        view
-        returns (address)
-    {
+    function _verify(
+        Voucher.SFTvoucher memory voucher
+    ) internal view returns (address) {
         bytes32 digest = _hash(voucher);
         return ECDSAUpgradeable.recover(digest, voucher.signature);
     }
